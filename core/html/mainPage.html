@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inkealo</title>
+</head>
+<body>
+    Introduce tu frase:
+    <select id="selScreen" name="selScreen" onchange="screenSelected()">
+        <option value="">--Elige pantalla a usar--</option>
+        ##screens##
+    </select>
+
+    <form id="textInput" method="post" action="textPetitionController.php" style="display: none;">
+        <input type="text" name="textDisplay">
+        <input type="hidden" id="numScreen" name="numScreen" value="">
+        <input type="submit" value="Print" id="button"></button>
+    </form>
+
+    <script>
+        function screenSelected(){
+            var selectValue = document.getElementById("selScreen").value;
+            var textForm = document.getElementById("textInput");
+            var inputForm = document.getElementById("numScreen");
+            if (selectValue != "") {
+                textForm.style.display="block";
+                inputForm.value = selectValue;
+            }
+            else {
+                textForm.style.display="none";
+                inputForm.value="";
+            }
+        }
+    </script>
+</body>
+</html>
