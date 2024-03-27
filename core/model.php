@@ -53,6 +53,21 @@ class PrintScreenModule extends Model {
 
         return $conn->query("$query");
     }
+
+    public function getScreenMessage($numScreen) {
+        $conn = DatabaseConnSingleton::getConn();
+
+        $query = "SELECT * FROM screens WHERE id = '".$numScreen."'";
+
+        if ($res = $conn->query("$query")) {
+            $row = $res->fetch_assoc(); 
+            $res->free();
+            
+            return $row['message'];
+        }
+        else
+            return null;
+    }
 }
 
 ?>

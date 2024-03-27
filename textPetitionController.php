@@ -4,9 +4,9 @@
 
     $printScreenModule = new PrintScreenModule();
 
-    if (isset($_POST['numScreen'])) {
-        echo "hola";
-        echo '<script type="text/javascript">alert("Mensaje cambiado con exito");</sctript>';
+    if (isset($_POST['numScreen']) && isset($_POST['textDisplay'])) {
+        $printScreenModule->setScreenMessage($_POST['numScreen'],$_POST['textDisplay']);
+        echo '<script type="text/javascript">alert("Mensaje cambiado con exito");</script>';
     }
 
     header("Refresh:1; URL=index.php");
