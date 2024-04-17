@@ -10,11 +10,15 @@ class Screen {
     private $id;
     private $name;
     private $text;
+    private $image;
+    private $isText;
 
-    public function __construct($id,$name,$text) {
+    public function __construct($id,$name,$text,$image,$isText) {
         $this->id = $id;
         $this->name = $name;
         $this->text = $text;
+        $this->image = $image;
+        $this->isText = $isText;
     }
 
     public function getId() {
@@ -28,6 +32,12 @@ class Screen {
     public function getText() {
         return $this->text;
     }
+    public function getImage() {
+        return $this->image;
+    }
+    public function isText() {
+        return $this->isText;
+    }
 }
 
 class PrintScreenModule extends Model {
@@ -39,7 +49,7 @@ class PrintScreenModule extends Model {
 
         if ($res = $conn->query("$query")) {
             while ($row = $res->fetch_assoc()) {
-                array_push($screenList, new Screen($row['id'],$row['name'],$row['message']));
+                array_push($screenList, new Screen($row['id'],$row['name'],$row['message'],$row['bitMap'],$row['isText']));
             }
             $res->free();
             return $screenList;
@@ -49,12 +59,20 @@ class PrintScreenModule extends Model {
     public function setScreenMessage($numScreen,$message) {
         $conn = DatabaseConnSingleton::getConn();
 
-        $query = "UPDATE screens SET message = '".$message."' WHERE id = '".$numScreen."'";
+        $query = "UPDATE screens SET message = '".$message."',isText = TRUE WHERE id = '".$numScreen."'";
 
         return $conn->query("$query");
     }
 
-    public function getScreenMessage($numScreen) {
+    public function setScreenImage($numScreen,$bitMap) {
+        $conn = DatabaseConnSingleton::getConn();
+
+        $query = "UPDATE screens SET bitMap = '".$bitMap."',isText = FALSE WHERE id = '".$numScreen."'";
+
+        return $conn->query("$query");
+    }
+
+    public function getScreenPrintable($numScreen) {
         $conn = DatabaseConnSingleton::getConn();
 
         $query = "SELECT * FROM screens WHERE id = '".$numScreen."'";
@@ -62,8 +80,7 @@ class PrintScreenModule extends Model {
         if ($res = $conn->query("$query")) {
             $row = $res->fetch_assoc(); 
             $res->free();
-            
-            return $row['message'];
+            return new Screen($row['id'],$row['name'],$row['message'],$row['bitMap'],$row['isText']);
         }
         else
             return null;

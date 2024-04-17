@@ -1,0 +1,91 @@
+* {
+  box-sizing: border-box;
+}
+
+main {
+  width: 800px;
+  border: 1px solid #e0e0e0;
+  margin: 0 auto;
+  display: flex;
+  flex-grow: 1;
+}
+
+.left-block {
+  width: 160px;
+  border-right: 1px solid #e0e0e0;
+}
+
+.brushes {
+  padding-top: 5px
+}
+
+.brushes button {
+  display: block;
+  width: 100%;
+  border: 0;
+  border-radius: 0;
+  background-color: #ece8e8;
+  margin-bottom: 5px;
+  padding: 5px;
+  height: 30px;
+  outline: none;
+  position: relative;
+  cursor: pointer;
+}
+
+.brushes button:after {
+  height: 1px;
+  display: block;
+  background: #808080;
+  content: '';
+}
+
+.brushes button:nth-of-type(1):after {
+  height: 1px;
+}
+
+.brushes button:nth-of-type(2):after {
+  height: 2px;
+}
+
+.brushes button:nth-of-type(3):after {
+  height: 3px;
+}
+
+.brushes button:nth-of-type(4):after {
+  height: 4px;
+}
+
+.brushes button:nth-of-type(5):after {
+  height: 5px;
+}
+
+.buttons {
+  height: 80px;
+  padding-top: 10px;
+}
+
+.buttons button {
+  display: block;
+  width: 100%;
+  border: 0;
+  border-radius: 0;
+  background-color: #ece8e8;
+  margin-bottom: 5px;
+  padding: 5px;
+  height: 30px;
+  outline: none;
+  position: relative;
+  cursor: pointer;  
+  font-size: 16px;
+}
+
+.right-block {
+  width: 257px;
+  height: 128px;
+  border: gray solid;
+}
+
+#paint-canvas {
+  cursor:crosshair;
+}

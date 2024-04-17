@@ -17,6 +17,11 @@
 
 #include <WiFi.h>
 #include <HTTPClient.h>
+#include <ArduinoJson.h>
+
+#include "base64.hpp"
+
+#include "IMG_0001.h"
 
 //Ports used
 GxIO_Class io(SPI, SS, 22, 21); 
@@ -25,7 +30,7 @@ GxEPD_Class display(io, 16, 4);
 const char* WIFI_SSID = "";
 const char* WIFI_PASSWORD = "";
 
-String HOST_NAME = "http://192.168.x.x"; // change to your PC's IP address
+String HOST_NAME = ""; // change to your PC's IP address
 String PATH_NAME   = "/InkScreen/screenController.php";
 String queryString = "?numScreen=1";
 
@@ -33,6 +38,16 @@ void setup()
 {
   Serial.begin(115200);
   String textPrinted = "";
+  int printStatus = NULL;
+  //Init display
+  Serial.println();
+  Serial.println("setup");
+
+  display.init(115200); // enable diagnostic output on Serial
+
+  Serial.println("setup done");
+
+  display.fillScreen(GxEPD_WHITE);
 
   //Init WiFi connection
   Serial.print("Conectando a WiFi...");
@@ -46,6 +61,7 @@ void setup()
 
   HTTPClient http;
 
+  http.useHTTP10(true);
   http.begin(HOST_NAME + PATH_NAME + queryString); //HTTP
   int httpCode = http.GET();
 
@@ -53,8 +69,23 @@ void setup()
   if(httpCode > 0) {
     // file found at server
     if(httpCode == HTTP_CODE_OK) {
-      textPrinted = http.getString();
-      Serial.println(textPrinted);
+      DynamicJsonDocument doc(2048);
+      deserializeJson(doc,http.getStream());
+      //textPrinted = http.getString();
+
+      //Serial.print (typeid(doc["image"]).name()); 
+      printStatus = doc["status"].as<int>();
+
+      if (printStatus == 0) {
+        textPrinted = doc["message"].as<String>();
+      }
+      else if (printStatus == 1) {
+        textPrinted = doc["image"].as<String>();
+      }
+      else 
+        textPrinted = doc["error"].as<String>();
+
+      //Serial.println(textPrinted);
     } else {
       // HTTP header has been send and Server response header has been handled
       Serial.printf("[HTTP] GET... code: %d\n", httpCode);
@@ -64,37 +95,66 @@ void setup()
   }
 
   http.end();
+  
+  //Init display
+  Serial.println();
+  Serial.println("setup");
 
-  if (textPrinted != "") {
-    //Init display
-    Serial.println();
-    Serial.println("setup");
+  display.init(115200); // enable diagnostic output on Serial
 
-    display.init(115200); // enable diagnostic output on Serial
+  Serial.println("setup done");
 
-    Serial.println("setup done");
+  display.fillScreen(GxEPD_WHITE);
 
-    display.fillScreen(GxEPD_WHITE);
+  textPrinted.trim();
 
-    textPrinted.trim();
+  if (printStatus == 0) 
     showMessage(textPrinted);
+  
+  else if (printStatus == 1) {
 
-    display.powerDown();
+    const char *delimiter = ",";
+
+    int str_len = textPrinted.length() + 1; 
+
+    // Prepare the character array (the buffer) 
+    char char_array[str_len];
+
+    // Copy it over 
+    textPrinted.toCharArray(char_array, str_len);
+
+    showImage(gImage_pruebaPaint);
+    
+    /*char* token = strtok(char_array,delimiter);
+    token = strtok(NULL,delimiter);
+
+    unsigned char* binary;
+    size_t decodedSize = decode_base64((unsigned char *)token,binary);
+    //showImage(binary);
+    Serial.printf("[%d, %d, %d, %d, %d, %d]\n",
+       binary[0], binary[1], binary[2],
+       binary[3], binary[4], binary[5]);*/
   }
   
+  display.powerDown();
+  
+  //showImage();
+  /*display.drawPixel(100,220, GxEPD_BLACK);
+  display.update();*/
 }
 
 void loop()
 {
   //showBitmapExample();
   //delay(2000);
-  
-  /*Serial.println("Mensaje a imprimir: ");
+  /*
+  Serial.println("Mensaje a imprimir: ");
   while (!Serial.available()) {}
   String msg = Serial.readString();
   msg.trim();
   Serial.println(msg);
-  showMessage(msg);*/
+  showMessage(msg);
+  */
   //drawCornerTest();
   //showFont("FreeMonoBold9pt7b", &FreeMonoBold9pt7b);
   //showFont("FreeMonoBold12pt7b", &FreeMonoBold12pt7b);
@@ -105,16 +165,30 @@ void loop()
   //delay(10000);
 }
 
-void showMessage(String m){
+void showMessage(String message){
   display.fillScreen(GxEPD_WHITE);
   display.setTextColor(GxEPD_BLACK);
   display.setFont(&FreeMonoBold9pt7b);
   display.setRotation(3);
   display.setCursor(0, 0);
   display.println();
-  display.println(m);
+  display.println(message);
   display.update();
   delay(5000);
+}
+
+void showImage(const uint8_t *bitmap) {
+  Serial.println(display.width());
+  Serial.println(display.height());
+  uint16_t x = (display.width() - 250) / 2;
+  uint16_t y = 0;
+  display.fillScreen(GxEPD_WHITE);
+  display.setRotation(3);
+  display.setCursor(0, 0);
+  display.drawBitmap(bitmap, 0, y, 250, 128, GxEPD_BLACK);
+  //display.drawBitmap(bitmap, 1440, false);
+  display.update();
+  delay(500);
 }
 
 #if defined(_GxGDEW0213Z16_H_)
