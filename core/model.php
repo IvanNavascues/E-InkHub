@@ -10,14 +10,16 @@ class Screen {
     private $id;
     private $name;
     private $text;
-    private $image;
+    private $imageBase64;
+    private $imageHex;
     private $isText;
 
-    public function __construct($id,$name,$text,$image,$isText) {
+    public function __construct($id,$name,$text,$imageBase64,$imageHex,$isText) {
         $this->id = $id;
         $this->name = $name;
         $this->text = $text;
-        $this->image = $image;
+        $this->imageBase64 = $imageBase64;
+        $this->imageHex = $imageHex;
         $this->isText = $isText;
     }
 
@@ -32,8 +34,11 @@ class Screen {
     public function getText() {
         return $this->text;
     }
-    public function getImage() {
-        return $this->image;
+    public function getImageBase64() {
+        return $this->imageBase64;
+    }
+    public function getImageHex() {
+        return $this->imageHex;
     }
     public function isText() {
         return $this->isText;
@@ -49,7 +54,7 @@ class PrintScreenModule extends Model {
 
         if ($res = $conn->query("$query")) {
             while ($row = $res->fetch_assoc()) {
-                array_push($screenList, new Screen($row['id'],$row['name'],$row['message'],$row['bitMap'],$row['isText']));
+                array_push($screenList, new Screen($row['id'],$row['name'],$row['message'],$row['imageBase64'],$row['imageHex'],$row['isText']));
             }
             $res->free();
             return $screenList;
@@ -64,10 +69,10 @@ class PrintScreenModule extends Model {
         return $conn->query("$query");
     }
 
-    public function setScreenImage($numScreen,$bitMap) {
+    public function setScreenImage($numScreen,$imageBase64,$imageHex) {
         $conn = DatabaseConnSingleton::getConn();
 
-        $query = "UPDATE screens SET bitMap = '".$bitMap."',isText = FALSE WHERE id = '".$numScreen."'";
+        $query = "UPDATE screens SET imageBase64 = '".$imageBase64."',imageHex = '".$imageHex."',isText = FALSE WHERE id = '".$numScreen."'";
 
         return $conn->query("$query");
     }
@@ -80,7 +85,7 @@ class PrintScreenModule extends Model {
         if ($res = $conn->query("$query")) {
             $row = $res->fetch_assoc(); 
             $res->free();
-            return new Screen($row['id'],$row['name'],$row['message'],$row['bitMap'],$row['isText']);
+            return new Screen($row['id'],$row['name'],$row['message'],$row['imageBase64'],$row['imageHex'],$row['isText']);
         }
         else
             return null;

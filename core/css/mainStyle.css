@@ -81,8 +81,9 @@ main {
 }
 
 .right-block {
-  width: 257px;
+  width: 256px;
   height: 128px;
+  padding: 1px;
   border: gray solid;
 }
 

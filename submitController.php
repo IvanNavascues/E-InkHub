@@ -11,8 +11,8 @@
             $aResult['status'] = 0;
             //echo '<script type="text/javascript">alert("Pantalla actualizada");</script>';
         }
-        else if (isset($_POST['imageDisplay'])) { 
-            $printScreenModule->setScreenImage($_POST['numScreen'],$_POST['imageDisplay']);
+        else if (isset($_POST['imageBase64']) && isset($_POST['imageHex'])) { 
+            $printScreenModule->setScreenImage($_POST['numScreen'],$_POST['imageBase64'],$_POST['imageHex']);
             $aResult['status'] = 1;
             //echo '<script type="text/javascript">alert("Pantalla actualizada");</script>';
         }

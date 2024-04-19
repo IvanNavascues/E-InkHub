@@ -9,7 +9,8 @@
         $screen = $printScreenModule->getScreenPrintable($_GET['numScreen']);
         if ($screen != null) {
             $aResult['message'] = $screen->getText();
-            $aResult['image'] = $screen->getImage();
+            $aResult['imageBase64'] = $screen->getImageBase64();
+            $aResult['imageHex'] = $screen->getImageHex();
             if ($screen->isText()) 
                 $aResult['status'] = 0;
             else 

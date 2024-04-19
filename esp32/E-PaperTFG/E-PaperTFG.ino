@@ -21,6 +21,9 @@
 
 #include "base64.hpp"
 
+#include <iostream>
+#include <string>
+
 #include "IMG_0001.h"
 
 //Ports used
@@ -80,7 +83,7 @@ void setup()
         textPrinted = doc["message"].as<String>();
       }
       else if (printStatus == 1) {
-        textPrinted = doc["image"].as<String>();
+        textPrinted = doc["imageHex"].as<String>();
       }
       else 
         textPrinted = doc["error"].as<String>();
@@ -113,27 +116,24 @@ void setup()
   
   else if (printStatus == 1) {
 
-    const char *delimiter = ",";
-
-    int str_len = textPrinted.length() + 1; 
-
-    // Prepare the character array (the buffer) 
-    char char_array[str_len];
-
-    // Copy it over 
-    textPrinted.toCharArray(char_array, str_len);
-
-    showImage(gImage_pruebaPaint);
-    
-    /*char* token = strtok(char_array,delimiter);
-    token = strtok(NULL,delimiter);
-
-    unsigned char* binary;
-    size_t decodedSize = decode_base64((unsigned char *)token,binary);
-    //showImage(binary);
-    Serial.printf("[%d, %d, %d, %d, %d, %d]\n",
-       binary[0], binary[1], binary[2],
-       binary[3], binary[4], binary[5]);*/
+    //std::string hexString = "0x7F";
+    // Convertir el string hexadecimal a uint8_t
+    //uint8_t hexValue = std::stoi(hexString, nullptr, 16);
+    const char *newText = textPrinted.c_str();
+    uint8_t imageHex[4096];
+    int j = 0;
+    for (int i = 0; i < strlen(newText); i=i+2){
+        String hexString = "0x";
+        hexString.concat(newText[i]);
+        hexString.concat(newText[i+1]);
+        uint8_t hexValue = std::stoi(hexString.c_str(), nullptr, 16);
+        if (i < 32)
+          Serial.println(hexValue,BIN);
+        imageHex[j] = hexValue;
+        j++;
+    }
+    //const uint8_t imageHexPrintable = 
+    showImage(imageHex);
   }
   
   display.powerDown();
@@ -178,15 +178,13 @@ void showMessage(String message){
 }
 
 void showImage(const uint8_t *bitmap) {
-  Serial.println(display.width());
-  Serial.println(display.height());
   uint16_t x = (display.width() - 250) / 2;
   uint16_t y = 0;
   display.fillScreen(GxEPD_WHITE);
   display.setRotation(3);
   display.setCursor(0, 0);
   display.drawBitmap(bitmap, 0, y, 250, 128, GxEPD_BLACK);
-  //display.drawBitmap(bitmap, 1440, false);
+  //display.drawBitmap(bitmap, 4000);
   display.update();
   delay(500);
 }
