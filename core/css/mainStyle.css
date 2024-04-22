@@ -6,22 +6,137 @@ main {
   width: 800px;
   border: 1px solid #e0e0e0;
   margin: 0 auto;
+}
+
+#topNav {
+  font-size: x-large;
+  background-color: #C4F4AD;
+  grid-area: header;
+}
+
+#menuList {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+#menuList li {
+  float: left;
+}
+
+#menuList li.right {
+  float:right;
+}
+
+#menuList li a {
+  display: block;
+  color: black;
+  text-align: center;
+  padding: 10px 12px;
+  text-decoration: none;
+  border: #91f164 solid;
+}
+
+#divSelScreen {
+  grid-area: selection;
   display: flex;
-  flex-grow: 1;
+  justify-content: center;
+  align-items: center;
+}
+
+#inputOption {
+  grid-area: input;
+  display: grid;
+  grid-template-columns: auto;
+  grid-template-rows: auto;
+  grid-template-areas: 
+    "inputLabel inputLabel inputLabel"
+    "leftBlock leftBlock rightBlock"
+    "textInput textInput textInput";
+}
+
+#divInputLabel {
+  grid-area: inputLabel;
+  font-size: xx-large;
+  font-weight: 600;
+  padding: 15px;
+  border-bottom: #d8d8d8 solid;
+  margin-bottom: 4px;
+}
+
+#divInputLabel label{
+  font-weight: 200;
+  font-size: xx-large;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+#textInput {
+  grid-area: textInput;
+}
+
+#textInput textarea {
+  width: 256px;
+  height: 128px;
+}
+
+#textInput input {
+  display: block;
+  width: 25%;
+  border: 0;
+  border-radius: 0;
+  background-color: #ece8e8;
+  margin-bottom: 5px;
+  padding: 5px;
+  height: 30px;
+  outline: none;
+  position: relative;
+  cursor: pointer;
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  font-size: x-large;
+  text-align: center;
+  width: 100%;
+  padding: 20px;
+  background-color: gray;
+}
+
+body {
+  display: grid;
+  grid-template-columns: auto;
+  grid-template-rows: auto;
+  grid-template-areas: 
+    "header header header"
+    "selection input input"
+    ". input input";
+}
+
+#selScreen {
+  height: auto;
+  width: 80%;
+  margin: 20px;
+  padding: 5px;
+  text-align: center;
+  font-size: x-large;
 }
 
 .left-block {
-  width: 160px;
-  border-right: 1px solid #e0e0e0;
+  width: auto;
+  grid-area: leftBlock;
+  font-size: x-large;
 }
 
 .brushes {
-  padding-top: 5px
+  padding-top: 5px;
 }
 
 .brushes button {
   display: block;
-  width: 100%;
+  width: 50%;
   border: 0;
   border-radius: 0;
   background-color: #ece8e8;
@@ -81,12 +196,38 @@ main {
 }
 
 .right-block {
-  width: 256px;
-  height: 128px;
-  padding: 1px;
-  border: gray solid;
+  width: auto;
+  height: auto;
+  grid-area: rightBlock;
 }
 
 #paint-canvas {
   cursor:crosshair;
+}
+
+#canvasDiv {
+  border: 4px gray solid;
+  width: 264px;
+  height: 136px;
+}
+
+#divButtons button {
+  display: block;
+  width: 50%;
+  border: 0;
+  border-radius: 0;
+  background-color: #ece8e8;
+  margin-bottom: 5px;
+  padding: 5px;
+  height: 30px;
+  outline: none;
+  position: relative;
+  cursor: pointer;
+}
+
+#divButtons button:after {
+  height: 1px;
+  display: block;
+  background: #808080;
+  content: '';
 }

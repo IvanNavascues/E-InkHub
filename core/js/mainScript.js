@@ -32,7 +32,7 @@ function screenSelected(isText){
 					}
 					else {
 						createOptions(false);
-						createDrawingArea(selectValue,res.image);
+						createDrawingArea(selectValue,res.imageBase64);
 					}
 				}
 				
@@ -68,17 +68,21 @@ function createOptions(isText) {
   var labelImage = document.createElement("label");
   labelImage.append(inputImage);
   labelImage.append("Dibujar");
+  var divLabel = document.createElement("div");
+  divLabel.setAttribute("id","divInputLabel");
+  divLabel.append("Selecciona input: ");
+  divLabel.append(labelText);
+  //divLabel.append(document.createElement("br"));
+  divLabel.append(labelImage);
+  //divLabel.append(document.createElement("br"));
 
   var inputOption = document.getElementById("inputOption");
-  inputOption.append(labelText);
-  inputOption.append(document.createElement("br"));
-  inputOption.append(labelImage);
-  inputOption.append(document.createElement("br"));
+  inputOption.append(divLabel);
 }
 
 function createTextArea(screenNumber,textScreen) {
 	var labelForm = document.createElement("label");
-	labelForm.innerHTML = "Introduce tu frase:";
+	//labelForm.innerHTML = "Introduce tu frase:";
 
 	var textAreaForm = document.createElement("textarea");
 	textAreaForm.setAttribute("name","textDisplay");
@@ -132,26 +136,14 @@ function createDrawingArea(screenNumber,imageScreen) {
 	for(let i=1;i<6;i++){
 		var button = document.createElement("button");
 		button.setAttribute("type","button");
-		button.setAttribute("value",i.toString);
+		button.setAttribute("value",i);
 		brushes.append(button);
 	}
-	
-	var clearButton = document.createElement("button");
-	clearButton.setAttribute("type","button");
-	clearButton.setAttribute("id","clear");
-	clearButton.innerHTML = "Borrar";
-	var saveButton = document.createElement("button");
-	saveButton.setAttribute("type","button");
-	saveButton.setAttribute("id","save");
-	saveButton.innerHTML = "Guardar";
-	var buttons = document.createElement("div");
-	brushes.append(clearButton);
-	brushes.append(saveButton);
 
 	var leftBlock = document.createElement("div");
 	leftBlock.setAttribute("class", "left-block");
+	leftBlock.append("Grosor");
 	leftBlock.append(brushes);
-	leftBlock.append(buttons);
 
 	var canvas = document.createElement("canvas");
 	canvas.setAttribute("id","paint-canvas");
@@ -163,9 +155,27 @@ function createDrawingArea(screenNumber,imageScreen) {
 	};
 	img.src = imageScreen;
 
+	var canvasDiv = document.createElement("div");
+	canvasDiv.setAttribute("id","canvasDiv");
+	canvasDiv.append(canvas);
+	
+	var clearButton = document.createElement("button");
+	clearButton.setAttribute("type","button");
+	clearButton.setAttribute("id","clear");
+	clearButton.innerHTML = "Borrar";
+	var saveButton = document.createElement("button");
+	saveButton.setAttribute("type","button");
+	saveButton.setAttribute("id","save");
+	saveButton.innerHTML = "Guardar";
+	var buttons = document.createElement("div");
+	buttons.setAttribute("id","divButtons");
+	buttons.append(clearButton);
+	buttons.append(saveButton);
+
 	var rigthBlock = document.createElement("div");
 	rigthBlock.setAttribute("class","right-block");
-	rigthBlock.append(canvas);
+	rigthBlock.append(canvasDiv);
+	rigthBlock.append(buttons);
 
 	var inputOption = document.getElementById("inputOption");
 	inputOption.append(leftBlock); 
@@ -272,10 +282,8 @@ function startDrawing(screenNumber){
     a.download = imageName || 'drawing';
     a.click();*/
   });
-
 }
 
-// Función para convertir una imagen base64 a una matriz de píxeles en blanco y negro
 function base64ToBlackWhiteArray(base64Image,callback) {
     var img = new Image();
     img.src = base64Image;
@@ -291,7 +299,6 @@ function base64ToBlackWhiteArray(base64Image,callback) {
         var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         var data = imageData.data;
 
-        // Convertir los datos de píxeles a blanco y negro
         var blackWhiteArray = [];
         for (var i = 0; i < data.length; i += 4) {
             var r = data[i];
@@ -301,24 +308,12 @@ function base64ToBlackWhiteArray(base64Image,callback) {
             var pixelValue = grayscaleValue > 128 ? 1 : 0; 
             blackWhiteArray.push(pixelValue);
         }
-		var a = document.createElement('a');
-		const file = new Blob(blackWhiteArray, { type: 'text/plain' });
-		a.href = URL.createObjectURL(file);
-		a.download = 'bitArray.txt';
-		a.click();
-		URL.revokeObjectURL(a.href);
 
         var hexArray = bitsToHex(blackWhiteArray);
-		a.href = 'data:attachment/text,' + encodeURI(hexArray);
-		a.target = '_blank';
-		a.download = 'hexArray.txt';
-		a.click();
-		URL.revokeObjectURL(a.href);
 		callback(hexArray);
     };
 }
 
-// Función para convertir un array de bits a un array de hexadecimal de 8 en 8
 function bitsToHex(bitsArray) {
     var hexArray = "";
     for (var i = 0; i < bitsArray.length; i += 8) {
