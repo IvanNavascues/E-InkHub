@@ -1,7 +1,7 @@
 <?php
 class View {
-    public function getMainPage(){
-        return file_get_contents(__DIR__ . '/html/mainPage.html');
+    public function getPatternPage(){
+        return file_get_contents(__DIR__ . '/html/patternPage.html');
     }
 }
 
@@ -13,7 +13,10 @@ class MainView extends View {
     }
 
     public function printMainPage(){
-        $page = $this->getMainPage();
+        $page = $this->getPatternPage();
+
+        $newPortion = file_get_contents(__DIR__ . '/html/mainPage.html');
+        $page = str_replace("##content##",$newPortion,$page);
 
         $page = str_replace("##screens##",$this->getScreenOptions(),$page);
 
@@ -27,6 +30,26 @@ class MainView extends View {
         }
 
         return $content;
+    }
+}
+
+class LoginView extends View { 
+    private $loginFailed;
+
+    public function __construct($loginFailed) {
+        $this->loginFailed = $loginFailed;
+    }
+
+    public function printLoginPage(){
+        $page = $this->getPatternPage();
+
+        $newPortion = file_get_contents(__DIR__ . '/html/loginPage.html');
+        $page = str_replace("##content##",$newPortion,$page);
+        if ($this->loginFailed) {
+            echo '<script>alert("Login fallido");</script>';
+        }
+
+        echo $page;
     }
 }
 ?>

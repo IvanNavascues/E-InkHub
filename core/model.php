@@ -45,12 +45,36 @@ class Screen {
     }
 }
 
+class User {
+    private $id;
+    private $username;
+    private $password;
+
+    public function __construct($id,$username,$password) {
+        $this->id = $id;
+        $this->username = $username;
+        $this->password = $password;
+    }
+
+    public function getId() {
+        return $this->id;
+    }
+
+    public function getUsername() {
+        return $this->username;
+    }
+
+    public function getPassword() {
+        return $this->password;
+    }
+}
+
 class PrintScreenModule extends Model {
-    public function getScreens() {
+    public function getScreens($idUser) {
         $conn = DatabaseConnSingleton::getConn();
 
         $screenList = array();
-        $query = "SELECT * FROM screens";
+        $query = "SELECT screens.* FROM screens JOIN userscreens ON screens.id = userscreens.idScreen WHERE userscreens.idUser = ".$idUser;
 
         if ($res = $conn->query("$query")) {
             while ($row = $res->fetch_assoc()) {
@@ -89,6 +113,24 @@ class PrintScreenModule extends Model {
         }
         else
             return null;
+    }
+}
+
+class LoginScreenModule extends Model {
+    public function checkLogin($username,$password) {
+        $conn = DatabaseConnSingleton::getConn();
+
+        $query = "SELECT * FROM users WHERE username = '".$username."' AND password = '".$password."'";
+
+        if ($res = $conn->query("$query")) {
+            $row = $res->fetch_assoc(); 
+            if (!empty($row)) {
+                $res->free();
+                return new User($row['id'],$row['username'],$row['password']);
+            }
+        }
+        
+        return null;
     }
 }
 
