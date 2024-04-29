@@ -3,6 +3,10 @@ class View {
     public function getPatternPage(){
         return file_get_contents(__DIR__ . '/html/patternPage.html');
     }
+
+    public function showAlert($message) {
+        echo '<script>alert("'.$message.'");</script>';
+    }
 }
 
 class MainView extends View {

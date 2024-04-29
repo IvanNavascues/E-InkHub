@@ -9,17 +9,13 @@
         $user = $loginScreenModule->checkLogin($_POST['username'], $_POST['password']);
         if ($user != null) {
             $_SESSION['user'] = $user->getId();
-            
-            $printScreenModule = new PrintScreenModule();
-            $screenList = $printScreenModule->getScreens($user->getId());
-        
-            $vista = new MainView($screenList);
-            $vista->printMainPage();
         }
         else {
-            $vista = new LoginView(false);
-            $vista->printLoginPage();
+            $vista = new View();
+            $vista->showAlert("Inicio de sesión no valido");
         }
     }
-
+    
+    header("Refresh: 0; URL=index.php");
+    exit();
 ?>

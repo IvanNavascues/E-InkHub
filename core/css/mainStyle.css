@@ -3,7 +3,8 @@
 }
 
 main {
-  width: 800px;
+  width: 100%;
+  height: 100%;
   border: 1px solid #e0e0e0;
   margin: 0 auto;
 }
@@ -43,17 +44,16 @@ main {
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 40%;
 }
 
 #inputOption {
   grid-area: input;
-  display: grid;
-  grid-template-columns: auto;
-  grid-template-rows: auto;
-  grid-template-areas: 
-    "inputLabel inputLabel inputLabel"
-    "leftBlock leftBlock rightBlock"
-    "textInput textInput textInput";
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+  height: 100%;
 }
 
 #divInputLabel {
@@ -106,13 +106,11 @@ footer {
 }
 
 body {
-  display: grid;
-  grid-template-columns: auto;
-  grid-template-rows: auto;
-  grid-template-areas: 
-    "header header header"
-    "selection input input"
-    ". input input";
+}
+
+canvas {
+  width: 100%;
+  height: 100%;
 }
 
 #selScreen {
@@ -203,12 +201,6 @@ body {
 
 #paint-canvas {
   cursor:crosshair;
-}
-
-#canvasDiv {
-  border: 4px gray solid;
-  width: 264px;
-  height: 136px;
 }
 
 #divButtons button {
