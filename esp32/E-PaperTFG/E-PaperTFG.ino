@@ -6,12 +6,6 @@
 
 #include GxEPD_BitmapExamples
 
-// FreeFonts from Adafruit_GFX
-#include <Fonts/FreeMonoBold9pt7b.h>
-#include <Fonts/FreeMonoBold12pt7b.h>
-#include <Fonts/FreeMonoBold18pt7b.h>
-#include <Fonts/FreeMonoBold24pt7b.h>
-
 #include <GxIO/GxIO_SPI/GxIO_SPI.h>
 #include <GxIO/GxIO.h>
 
@@ -24,8 +18,6 @@
 #include <iostream>
 #include <string>
 
-#include "IMG_0001.h"
-
 //Ports used
 GxIO_Class io(SPI, SS, 22, 21); 
 GxEPD_Class display(io, 16, 4); 
@@ -33,7 +25,7 @@ GxEPD_Class display(io, 16, 4);
 const char* WIFI_SSID = "";
 const char* WIFI_PASSWORD = "";
 
-String HOST_NAME = ""; // change to your PC's IP address
+String HOST_NAME = "http://192."; // change to your PC's IP address
 String PATH_NAME   = "/InkScreen/screenController.php";
 String queryString = "?numScreen=1";
 
@@ -80,9 +72,6 @@ void setup()
       printStatus = doc["status"].as<int>();
 
       if (printStatus == 0) {
-        textPrinted = doc["message"].as<String>();
-      }
-      else if (printStatus == 1) {
         textPrinted = doc["imageHex"].as<String>();
       }
       else 
@@ -111,11 +100,8 @@ void setup()
 
   textPrinted.trim();
 
-  if (printStatus == 0) 
-    showMessage(textPrinted);
   
-  else if (printStatus == 1) {
-
+  if (printStatus == 0) {
     //std::string hexString = "0x7F";
     // Convertir el string hexadecimal a uint8_t
     //uint8_t hexValue = std::stoi(hexString, nullptr, 16);
@@ -137,34 +123,11 @@ void setup()
   }
   
   display.powerDown();
-  
-  //showImage();
-  /*display.drawPixel(100,220, GxEPD_BLACK);
-  display.update();*/
 }
 
-void loop()
-{
-  //showBitmapExample();
-  //delay(2000);
-  /*
-  Serial.println("Mensaje a imprimir: ");
-  while (!Serial.available()) {}
-  String msg = Serial.readString();
-  msg.trim();
-  Serial.println(msg);
-  showMessage(msg);
-  */
-  //drawCornerTest();
-  //showFont("FreeMonoBold9pt7b", &FreeMonoBold9pt7b);
-  //showFont("FreeMonoBold12pt7b", &FreeMonoBold12pt7b);
-  //showFont("FreeMonoBold18pt7b", &FreeMonoBold18pt7b);
-  //showFont("FreeMonoBold24pt7b", &FreeMonoBold24pt7b);
-  
-  //display.powerDown();
-  //delay(10000);
-}
+void loop(){}
 
+/*
 void showMessage(String message){
   display.fillScreen(GxEPD_WHITE);
   display.setTextColor(GxEPD_BLACK);
@@ -175,7 +138,7 @@ void showMessage(String message){
   display.println(message);
   display.update();
   delay(5000);
-}
+}*/
 
 void showImage(const uint8_t *bitmap) {
   uint16_t x = (display.width() - 250) / 2;
@@ -187,120 +150,4 @@ void showImage(const uint8_t *bitmap) {
   //display.drawBitmap(bitmap, 4000);
   display.update();
   delay(500);
-}
-
-#if defined(_GxGDEW0213Z16_H_)
-#define HAS_RED_COLOR
-void showBitmapExample()
-{
-  display.drawPicture(BitmapWaveshare_black, BitmapWaveshare_red, sizeof(BitmapWaveshare_black), sizeof(BitmapWaveshare_red));
-  delay(5000);
-  display.drawExamplePicture(BitmapExample1, BitmapExample2, sizeof(BitmapExample1), sizeof(BitmapExample2));
-  delay(5000);
-#if !defined(__AVR)
-  display.drawExamplePicture(BitmapExample3, BitmapExample4, sizeof(BitmapExample3), sizeof(BitmapExample4));
-  delay(5000);
-#endif
-  display.drawExampleBitmap(BitmapWaveshare_black, sizeof(BitmapWaveshare_black));
-  delay(2000);
-  // example bitmaps for b/w/r are normal on b/w, but inverted on red
-  display.drawExampleBitmap(BitmapExample1, sizeof(BitmapExample1));
-  delay(2000);
-  display.drawExampleBitmap(BitmapExample2, sizeof(BitmapExample2), GxEPD::bm_invert);
-  delay(2000);
-  display.drawExampleBitmap(BitmapExample1, 0, 0, GxEPD_WIDTH, GxEPD_HEIGHT, GxEPD_BLACK);
-  display.update();
-}
-#endif
-
-#if defined(_GxGDEH0213Z19_H_)
-#define HAS_RED_COLOR
-void showBitmapExample()
-{
-  display.drawExamplePicture(BitmapExample1_black, BitmapExample1_red, sizeof(BitmapExample1_black), sizeof(BitmapExample1_red));
-  delay(5000);
-#if !defined(__AVR)
-  display.drawExamplePicture(BitmapExample2_black, BitmapExample2_red, sizeof(BitmapExample2_black), sizeof(BitmapExample2_red));
-  delay(5000);
-#endif
-}
-#endif
-
-#if defined(_GxGDEM0213B74_H_)
-void showBitmapExample()
-{
-  display.drawExampleBitmap(BitmapExample1, sizeof(BitmapExample1));
-  delay(2000);
-  display.drawExampleBitmap(BitmapExample2, sizeof(BitmapExample2));
-  delay(5000);
-#if !defined(__AVR)
-  display.drawExampleBitmap(BitmapExample3, sizeof(BitmapExample3));
-  delay(5000);
-  display.drawExampleBitmap(logo, sizeof(logo));
-  delay(5000);
-  display.drawExampleBitmap(first, sizeof(first));
-  delay(5000);
-  display.drawExampleBitmap(second, sizeof(second));
-  delay(5000);
-  display.drawExampleBitmap(third, sizeof(third));
-  delay(5000);
-#endif
-  display.fillScreen(GxEPD_WHITE);
-  display.drawExampleBitmap(BitmapExample1, 0, 0, GxEPD_WIDTH, GxEPD_HEIGHT, GxEPD_BLACK);
-  display.update();
-  delay(5000);
-  showBoat();
-}
-#endif
-
-
-void drawCornerTest()
-{
-  display.drawCornerTest();
-  delay(5000);
-  uint8_t rotation = display.getRotation();
-  for (uint16_t r = 0; r < 4; r++)
-  {
-    display.setRotation(r);
-    display.fillScreen(GxEPD_WHITE);
-    display.fillRect(0, 0, 8, 8, GxEPD_BLACK);
-    display.fillRect(display.width() - 18, 0, 16, 16, GxEPD_BLACK);
-    display.fillRect(display.width() - 25, display.height() - 25, 24, 24, GxEPD_BLACK);
-    display.fillRect(0, display.height() - 33, 32, 32, GxEPD_BLACK);
-    display.update();
-    delay(5000);
-  }
-  display.setRotation(rotation); // restore
-}
-
-
-#include "IMG_0001.h"
-void showBoat()
-{
-  // thanks to bytecrusher: http://forum.arduino.cc/index.php?topic=487007.msg3367378#msg3367378
-  uint16_t x = (display.width() - 64) / 2;
-  uint16_t y = 5;
-  display.fillScreen(GxEPD_WHITE);
-  display.drawExampleBitmap(gImage_IMG_0001, x, y, 64, 180, GxEPD_BLACK);
-  display.update();
-  delay(500);
-  uint16_t forward = GxEPD::bm_invert | GxEPD::bm_flip_x;
-  uint16_t reverse = GxEPD::bm_invert | GxEPD::bm_flip_x | GxEPD::bm_flip_y;
-  for (; y + 180 + 5 <= display.height(); y += 5)
-  {
-    display.fillScreen(GxEPD_WHITE);
-    display.drawExampleBitmap(gImage_IMG_0001, x, y, 64, 180, GxEPD_BLACK, forward);
-    display.updateWindow(0, 0, display.width(), display.height());
-    delay(500);
-  }
-  delay(1000);
-  for (; y >= 5; y -= 5)
-  {
-    display.fillScreen(GxEPD_WHITE);
-    display.drawExampleBitmap(gImage_IMG_0001, x, y, 64, 180, GxEPD_BLACK, reverse);
-    display.updateWindow(0, 0, display.width(), display.height());
-    delay(1000);
-  }
-  display.update();
-  delay(1000);
 }

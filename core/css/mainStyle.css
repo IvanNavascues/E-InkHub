@@ -5,8 +5,74 @@
 main {
   width: 100%;
   height: 100%;
-  border: 1px solid #e0e0e0;
-  margin: 0 auto;
+  display: grid;
+  grid-template-columns: auto;
+  grid-template-rows: auto;
+  grid-template-areas: 
+    "opt opt opt"
+    "can can can"
+    "buttons buttons buttons";
+}
+
+#optionsDiv {
+  grid-area: opt;
+  display: flex;
+  justify-content: center;
+}
+
+#colorPickerDiv {
+  margin-right: 20px;
+  position: relative;
+  width: auto;
+  font-size: xx-large;
+}
+
+#brushSelDiv {
+  margin-right: 20px;
+  position: relative;
+  width: auto;
+  font-size: xx-large;
+}
+
+  #brushSel {
+    width: 180px;
+    height: 30px;
+    position: relative;
+    font-size: x-large;
+  }
+
+#shapeSelDiv {
+  margin-right: 20px;
+  position: relative;
+  width: auto;
+  font-size: xx-large;
+}
+
+#sliderDiv {
+  margin-right: 20px;
+  position: relative;
+  width: auto;
+  font-size: xx-large;
+}
+
+#canvasDiv {
+  grid-area: can;
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+  position: relative;
+  width: auto;
+  font-size: xx-large;
+}
+
+#buttonsDiv {
+  grid-area: buttons;
+  position: relative;
+  width: auto;
+  display: flex;
+  justify-content: space-evenly;
+  margin-top: 50px;
+  margin-bottom: 80px;
 }
 
 #topNav {
@@ -56,45 +122,6 @@ main {
   height: 100%;
 }
 
-#divInputLabel {
-  grid-area: inputLabel;
-  font-size: xx-large;
-  font-weight: 600;
-  padding: 15px;
-  border-bottom: #d8d8d8 solid;
-  margin-bottom: 4px;
-}
-
-#divInputLabel label{
-  font-weight: 200;
-  font-size: xx-large;
-  margin-right: 10px;
-  margin-left: 10px;
-}
-
-#textInput {
-  grid-area: textInput;
-}
-
-#textInput textarea {
-  width: 256px;
-  height: 128px;
-}
-
-#textInput input {
-  display: block;
-  width: 25%;
-  border: 0;
-  border-radius: 0;
-  background-color: #ece8e8;
-  margin-bottom: 5px;
-  padding: 5px;
-  height: 30px;
-  outline: none;
-  position: relative;
-  cursor: pointer;
-}
-
 footer {
   position: fixed;
   bottom: 0;
@@ -103,14 +130,7 @@ footer {
   width: 100%;
   padding: 20px;
   background-color: gray;
-}
-
-body {
-}
-
-canvas {
-  width: 100%;
-  height: 100%;
+  margin-top: 50px;
 }
 
 #selScreen {
@@ -122,104 +142,3 @@ canvas {
   font-size: x-large;
 }
 
-.left-block {
-  width: auto;
-  grid-area: leftBlock;
-  font-size: x-large;
-}
-
-.brushes {
-  padding-top: 5px;
-}
-
-.brushes button {
-  display: block;
-  width: 50%;
-  border: 0;
-  border-radius: 0;
-  background-color: #ece8e8;
-  margin-bottom: 5px;
-  padding: 5px;
-  height: 30px;
-  outline: none;
-  position: relative;
-  cursor: pointer;
-}
-
-.brushes button:after {
-  height: 1px;
-  display: block;
-  background: #808080;
-  content: '';
-}
-
-.brushes button:nth-of-type(1):after {
-  height: 1px;
-}
-
-.brushes button:nth-of-type(2):after {
-  height: 2px;
-}
-
-.brushes button:nth-of-type(3):after {
-  height: 3px;
-}
-
-.brushes button:nth-of-type(4):after {
-  height: 4px;
-}
-
-.brushes button:nth-of-type(5):after {
-  height: 5px;
-}
-
-.buttons {
-  height: 80px;
-  padding-top: 10px;
-}
-
-.buttons button {
-  display: block;
-  width: 100%;
-  border: 0;
-  border-radius: 0;
-  background-color: #ece8e8;
-  margin-bottom: 5px;
-  padding: 5px;
-  height: 30px;
-  outline: none;
-  position: relative;
-  cursor: pointer;  
-  font-size: 16px;
-}
-
-.right-block {
-  width: auto;
-  height: auto;
-  grid-area: rightBlock;
-}
-
-#paint-canvas {
-  cursor:crosshair;
-}
-
-#divButtons button {
-  display: block;
-  width: 50%;
-  border: 0;
-  border-radius: 0;
-  background-color: #ece8e8;
-  margin-bottom: 5px;
-  padding: 5px;
-  height: 30px;
-  outline: none;
-  position: relative;
-  cursor: pointer;
-}
-
-#divButtons button:after {
-  height: 1px;
-  display: block;
-  background: #808080;
-  content: '';
-}

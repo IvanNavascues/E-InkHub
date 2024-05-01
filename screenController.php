@@ -8,13 +8,15 @@
     if (isset($_GET['numScreen'])) {
         $screen = $printScreenModule->getScreenPrintable($_GET['numScreen']);
         if ($screen != null) {
-            $aResult['message'] = $screen->getText();
+            $aResult['width'] = $screen->getWidth();
+            $aResult['height'] = $screen->getHeight();
+            $aResult['color'] = $screen->getColor();
             $aResult['imageBase64'] = $screen->getImageBase64();
             $aResult['imageHex'] = $screen->getImageHex();
-            if ($screen->isText()) 
-                $aResult['status'] = 0;
-            else 
-                $aResult['status'] = 1;
+            $aResult['imageRed'] = $screen->getImageRed();
+            $aResult['imageGreen'] = $screen->getImageGreen();
+            $aResult['imageBlue'] = $screen->getImageBlue();
+            $aResult['status'] = 0;
         }
         else {
             $aResult['error'] = "ERROR: La pantalla seleccionada no existe";

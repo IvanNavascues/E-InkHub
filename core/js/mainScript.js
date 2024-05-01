@@ -1,13 +1,24 @@
 var bgcolor = 'white';
-var options = ["Color:        ","Herramienta:       ","Grosor (- +): "];
-var brushes = ["Pincel (N)","Aerografo (S)","Borrador (E)","Rectangulo (Q)","Triangulo (T)","Texto (T)"]
+var options = ["Color: ","Herramienta: ","Formas: ","Grosor (- +): "];
+var brushes = ["Pincel (P)","Aerografo (A)","Borrador (B)","Texto (T)"];
+var shapes = ["Rectangulo","Triangulo","Circulo"];
+var specialKeyCodes = [8,9,13,16,17,18,20,27,33,34,35,36,37,38,39,40,44,46,144];
+var screenTypes = ["b&w","r","g","b","rgb"];
 
 var canvasPrinted = false;
 var typingText = false;
+var drawingShape = false;
+var screenWidth;
+var screenHeight;
 var minBrushThick = 1;
 var maxBrushThick = 40;
-var textPosX;
-var textPosY;
+var headText = 0;
+var typedText = "";
+var savedCanvas;
+var shapeSelected = "";
+var screenColor;
+var firstClick = null;
+var lastClick = null;
 
 function screenSelected(){
 	var selectValue = document.getElementById("selScreen").value;
@@ -23,29 +34,12 @@ function screenSelected(){
 			success: function (res) {
 				if (res.status == -1) {
 					alert(res.error);
-					console.log(res.error);
+					console.error(res.error);
 				}
-				else {/*
-					if (isText == null) { //default
-						if(res.status == 0) {
-							createOptions(true);
-							createTextArea(selectValue,res.message);
-						}
-						else if(res.status == 1){
-							createOptions(false);
-							createDrawingArea(selectValue,res.imageBase64);
-						}
-					}
-					else if (isText) {
-						createOptions(true);
-						createTextArea(selectValue,res.message);
-					}
-					else {
-						createOptions(false);
-						createDrawingArea(selectValue,res.imageBase64);
-					}*/
-					//canvasImage = res.imageBase64;
-					
+				else {
+					screenWidth = res.width;
+					screenHeight = res.height;
+					screenColor = res.color;
 					setupCanvas(res.imageBase64);
 					canvasPrinted = true;
 				}
@@ -73,12 +67,14 @@ function setupCanvas(canvasImage) {
 	//CREATE ELEMENTS:
   
 	//create nav
+	navMain = createDiv();
+	navMain.id("optionsDiv");
+	navMain.parent("main");
+
 	navColorPicker = createDiv(options[0]);
-	navColorPicker.style('position','relative');
-	navColorPicker.style('width','auto');
-	navColorPicker.style('font-size','xx-large');
+	navColorPicker.id("colorPickerDiv");
    
-	navColorPicker.parent("main");
+	navColorPicker.parent(navMain);
   
 	//create a colorpicker (to whoever is grading this, i'm using a colorpicker instead of multiple buttons for color because it's easier to implement and the user can personalize the color hoever they want.)
 	colorPicker = createColorPicker('#000000');
@@ -87,33 +83,45 @@ function setupCanvas(canvasImage) {
   
 	colorPicker.parent(navColorPicker);
   
-	//create a dropdown menu
+	//create a dropdown menu for brushes
 	navSel = createDiv(options[1]);
-	navSel.style('position','relative');
-	navSel.style('width','auto');
-	navSel.style('font-size','xx-large');
+	navSel.id("brushSelDiv");
    
-	navSel.parent("main");
+	navSel.parent(navMain);
   
 	sel = createSelect();
 	sel.id("brushSel");
-	sel.style('width','180px');
-	sel.style('height','30px');
-	sel.style('position','relative');
-	sel.style('font-size','x-large');
+	sel.mouseClicked(() => {
+		changeShape("")
+	 });
 	brushes.forEach((item) => {
 	  sel.option(item);
 	});
   
 	sel.parent(navSel);
+
+	//create a dropdown menu for shapes
+	navSelShape = createDiv(options[2]);
+	navSelShape.id("shapeSelDiv");
+   
+	navSelShape.parent(navMain);
+  
+	shapes.forEach((shape) => {
+		button = createButton(shape);
+		button.mousePressed(() => {
+			changeShape(shape)
+		 });
+		button.style('position','relative');
+		button.style('width', 'auto');
+		button.style('height', '30px');
+		button.parent(navSelShape);
+	});
   
 	//create a slider
-	navSlider = createDiv(options[2]);
-	navSlider.style('position','relative');
-	navSlider.style('width','auto');
-	navSlider.style('font-size','xx-large');
+	navSlider = createDiv(options[3]);
+	navSlider.id("sliderDiv");
    
-	navSlider.parent("main");
+	navSlider.parent(navMain);
   
 	slider = createSlider(minBrushThick, maxBrushThick, 20, 1);
 	//slider.position(370, 50);
@@ -124,32 +132,29 @@ function setupCanvas(canvasImage) {
   
 	//create canvas
 	navCanvas = createDiv();
-	navCanvas.style('position','relative');
-	navCanvas.style('width','auto');
-	navCanvas.style('font-size','xx-large');
 	navCanvas.id('canvasDiv');
   
 	navCanvas.parent("main");
   
-	canvas = createCanvas(256, 128);
+	canvas = createCanvas(screenWidth, screenHeight);
 	canvas.background(bgcolor);
 	canvas.style('width','60%');
-	canvas.style('height','60%');
+	canvas.style('height','100%');
 	canvas.style('border','#91f164 solid');
   
 	canvas.parent(navCanvas);
   
 	//create a button
 	navButtons = createDiv();
-	navButtons.style('position','relative');
-	navButtons.style('width','auto');
+	navButtons.id("buttonsDiv");
    
 	navButtons.parent("main");
 
 	input = createFileInput(handleFile);
+	input.id('inputFile');
 	input.parent(navButtons);
   
-	button = createButton("Borrar todo (R)");
+	button = createButton("Borrar todo (D)");
 	button.style('position','relative');
 	button.style('width', '200px');
 	button.style('height', '30px');
@@ -158,30 +163,31 @@ function setupCanvas(canvasImage) {
 	button.parent(navButtons);
   
 	//create a button
-	button = createButton("Guardar (I)");
+	button = createButton("Guardar (G)");
 	button.style('position','relative');
 	button.style('width', '200px');
 	button.style('height', '30px');
-	button.mousePressed(SaveImage);
+	button.mousePressed(saveImage);
   
 	button.parent(navButtons);
 
-	var raw = new Image();
-	raw.src = canvasImage;
-	raw.onload = function() {
-		img = createImage(raw.width, raw.height);
-		img.drawingContext.drawImage(raw, 0, 0);
-		image(img, 0, 0); // draw the image, etc here
+	if (canvasImage != null) {
+		var raw = new Image();
+		raw.src = canvasImage;
+		raw.onload = function() {
+			img = createImage(raw.width, raw.height);
+			img.drawingContext.drawImage(raw, 0, 0);
+			image(img, 0, 0); // draw the image, etc here
+		}	
 	}
-
+	
 }
   
 function draw() {
 	if (canvasPrinted) {
 		noStroke();
 
-		//Check if mouse is pressed and draw the lines and stuff
-		if (mouseIsPressed && mouseInCanvas() && !typingText) {
+		if (mouseIsPressed && mouseInCanvas() && !typingText && focused && !drawingShape) {
 			if (sel.value() == brushes[0]) {
 				//normal paint brush
 		
@@ -212,104 +218,173 @@ function draw() {
 				strokeWeight(slider.value());
 				line(pmouseX, pmouseY, mouseX, mouseY);
 			}
-			if (sel.value() == brushes[3]) {
-				//draw rectangle with brush thickness at mousex and y
-				fill(colorPicker.color());
-				rect(mouseX-slider.value()/2, mouseY-slider.value()/2, slider.value(), slider.value());
-			}
-			if (sel.value() == brushes[4]) {
-				//draw triangle with brush thickness at mousex and y
-				fill(colorPicker.color());
-				triangle(mouseX, mouseY, mouseX + slider.value(), mouseY + slider.value(), mouseX - slider.value(), mouseY + slider.value());
-			}
 		}
-		else if (mouseIsPressed && !mouseInCanvas() && typingText) {
-			stopTyping();
+		else if (mouseInCanvas() && typingText) {
+			//stopTyping();
+			image(savedCanvas,0,0);
+  			textSize(slider.value());
+			fill(colorPicker.color());
+    		text(typedText, mouseX, mouseY);
+			stroke(colorPicker.color());
+			strokeWeight(1);
+			let charSize = map(slider.value(),minBrushThick,maxBrushThick,1,21);
+			line(mouseX+charSize*headText,mouseY,mouseX+charSize+charSize*headText,mouseY);
+		}
+		else if (mouseInCanvas() && drawingShape) {
+			image(savedCanvas,0,0);
+			if (firstClick !== null) {
+				if (shapeSelected == shapes[0]) { //RECTANGLE
+					fill(colorPicker.color());
+					rect(firstClick.x,firstClick.y,mouseX-firstClick.x,mouseY-firstClick.y);
+				}
+				else if (shapeSelected == shapes[1]) { //TRIANGLE
+					fill(colorPicker.color());
+					let triHeight = firstClick.y-mouseY;
+					let triSize = 2*triHeight / Math.sqrt(3);
+					triangle(firstClick.x,firstClick.y,firstClick.x-triSize / 2,mouseY,firstClick.x + triSize / 2,mouseY);
+				}
+				else if (shapeSelected == shapes[2]) { //CIRCLE
+					fill(colorPicker.color());
+					circle(firstClick.x,firstClick.y,2*firstClick.distanceTo(new Coordinates(mouseX,mouseY)));
+				}
+			}
 		}
 	}
 }
 
 function mousePressed() {
-	if (canvasPrinted) {
-		if (sel.value() == brushes[5] && !typingText) {
+	if (canvasPrinted && focused) {
+		if (sel.value() == brushes[3] && !typingText) {
 			startTyping();
 		}
+		else if (typingText) {
+			stopTyping();
+		}
+
+		if (drawingShape && mouseInCanvas()) {
+			if (firstClick === null) {
+				startShape();
+			}
+			else if (lastClick === null) {
+				stopShape();
+			}
+		}
 	}
-  }
+}
 
 function startTyping() {
+	savedCanvas = get(0, 0, width, height);
 	typingText = true;
-	let textBox = createInput('');
-	textBox.id("inputText");	
-	textBox.position(mouseX, mouseY);
-	textBox.style("font-size",slider.value()+"px");
-	console.log(mouseX+" "+mouseY);
-	textBox.parent("canvasDiv");
-	textPosX = mouseX;
-	textPosY = mouseY;
+	typedText = "";
+	headText = 0;
 }
 
 function stopTyping() {
-	typingText = false;
-	var textBox = document.getElementById("inputText");
-	textSize(slider.value()); 
+	image(savedCanvas,0,0);
+	textSize(slider.value());
 	fill(colorPicker.color());
-	text(textBox.value,textPosX,textPosY);
-	textBox.remove();
+	text(typedText, mouseX, mouseY);
+	typingText = false;
+	typedText = "";
+	headText = 0;
+}
+
+function startShape() {
+	savedCanvas = get(0, 0, width, height);
+	drawingShape = true;
+	firstClick = new Coordinates(mouseX,mouseY);
+	lastClick = null;
+}
+
+function stopShape() {
+	image(savedCanvas,0,0);
+	fill(colorPicker.color());
+	lastClick = new Coordinates(mouseX,mouseY);
+	if (shapeSelected != "") {
+		if (shapeSelected == shapes[0]) { //RECTANGLE
+			fill(colorPicker.color());
+			rect(firstClick.x,firstClick.y,lastClick.x-firstClick.x,lastClick.y-firstClick.y);
+		}
+		else if (shapeSelected == shapes[1]) { //TRIANGLE
+			fill(colorPicker.color());
+			let triHeight = firstClick.y-lastClick.y;
+			let triSize = 2*triHeight / Math.sqrt(3);
+			triangle(firstClick.x,firstClick.y,firstClick.x-triSize / 2,lastClick.y,firstClick.x + triSize / 2,lastClick.y);
+		}
+		else if (shapeSelected == shapes[2]) { //CIRCLE
+			fill(colorPicker.color());
+			circle(firstClick.x,firstClick.y,2*firstClick.distanceTo(lastClick));
+		}
+	}
+	savedCanvas = get(0, 0, width, height);
+	firstClick = null;
+	lastClick = null;
+	headText = 0;
+}
+
+function changeShape(shape) {
+	if (shape != "") {
+		savedCanvas = get(0, 0, width, height);
+		drawingShape = true;
+	}
+	else {
+		drawingShape = false;
+	}
+	shapeSelected = shape;
 }
 
 function handleFile(file){
-	imgLoaded = false;
 	if (file.type === 'image') {
-	  img = createImg(
-		file.data, 'Alt text', 'anonymous', imgCreated);
-	  img.hide();
+		img = createImg(file.data, 'Alt text', 'anonymous', imgCreated);
+		img.hide();
 	} else {
-	  img = null;
+		img = null;
 	}
   }
   
-  // Once the img element is created, use it to 
-  // convert the image element into a p5Image object. 
-  function imgCreated(){
+function imgCreated(){
 	img.hide();
-	// Create a temporary p5.Graphics object to draw the image.
 	let g = createGraphics(img.elt.width, img.elt.height);
 	g.image(img, 0, 0);
-	// Remove the original element from the DOM.
 	img.remove();
-	// g.get will return image data as a p5.Image object
 	img = g.get(0, 0, g.width, g.height)
-	
-	// Because we've converted it into a p5.Image object, we can
-	// use functions such as 'resize', and 'filter',
-	// which aren't available on the HTML img element.
-	// Uncomment the following lines for an example...
-	
-	
-	// Resize it to fill the canvas
+
 	if (img.width < img.height){
-	  img.resize(width, 0);
+		img.resize(width, 0);
 	} else {
-	  img.resize(0, height);
+		img.resize(0, height);
 	}
-  
-	// Record that we have finished creating the image object.
-    image(img, 0, 0);
-  }
-  
-function clearBG() {
-	//clear the background by filling everything with white
-	fill(bgcolor);
-	noStroke();
-	rect(0, 0, width, height);
+
+	image(img, 0, 0);
 }
   
-function SaveImage() {
+function clearBG() {
+	if (confirm("Se borrará todo el progreso")) {
+		typingText = false;
+		drawingShape = false;
+		typedText = "";
+		shapeSelected = "";
+		firstClick = null;
+		lastClick = null;
+		fill(bgcolor);
+		noStroke();
+		rect(0, 0, width, height);
+	} 
+}
+  
+function saveImage() {
 	var screenNumber = document.getElementById("selScreen").value;
 	//var canvas = document.getElementById("defaultCanvas0");
 	var img = get(0, 0, width, height);
 	img.loadPixels();
+	var imgRed = createImage(screenWidth, screenHeight);
+	imgRed.loadPixels();
+	var imgGreen = createImage(screenWidth, screenHeight);
+	imgGreen.loadPixels();
+	var imgBlue = createImage(screenWidth, screenHeight);
+	imgBlue.loadPixels();
+	var imgBW = createImage(screenWidth, screenHeight);
+	imgBW.loadPixels();
 	var blackWhiteArray = [];
 	const d = pixelDensity();
 	for (let y = 0; y < img.height; y++) {
@@ -317,62 +392,119 @@ function SaveImage() {
 			pixel = img.get(x,y);
 			var grayscaleValue = pixel[0]*0.3 + pixel[1]*0.59 + pixel[2]*0.11; //Metodo luminico
 			blackWhiteArray.push(grayscaleValue > 128 ? 0 : 1);
+			
+			imgBW.set(x,y,grayscaleValue > 128 ? 255 : 0);
+			var pixelRed = [pixel[0],0,0,pixel[3]];
+			imgRed.set(x,y,pixelRed);
+			var pixelGreen = [0,pixel[1],0,pixel[3]];
+			imgGreen.set(x,y,pixelGreen);
+			var pixelBlue = [0,0,pixel[2],pixel[3]];
+			imgBlue.set(x,y,pixelBlue);
 		}
 	}
 	var hexArray = bitsToHex(blackWhiteArray);
-	var canvasDataURL = img.canvas.toDataURL();
-	console.log(blackWhiteArray);
-	$.post("submitController.php", 
-		{
-			numScreen: screenNumber, 
-			imageBase64: canvasDataURL,
-			imageHex: hexArray
-		},
-		function(res) {
-			if (res.status != -1) {
-				alert("Imagen actualizada con exito");
-			}	
-			else
-				alert(res.error);
-			
-			location.reload();
-		},
-		"json");
-	//var to_save = get(0, 0, width, height);
-	//to_save.save("canvas.png");
+	imgBW.updatePixels();
+	imgRed.updatePixels();
+	imgGreen.updatePixels();
+	imgBlue.updatePixels();
+
+	savedCanvas = get(0, 0, width, height);
+	if (screenColor === screenTypes[0]) 
+		image(imgBW,0,0);
+	else if (screenColor === screenTypes[1])
+		image(imgRed,0,0);
+	else if (screenColor === screenTypes[2])
+		image(imgGreen,0,0);
+	else if (screenColor === screenTypes[3])
+		image(imgBlue,0,0);
+
+	setTimeout(function(){
+		if (confirm("Así se verá en pantalla, ¿Desea continuar?")) {
+			image(savedCanvas,0,0);
+			var canvasDataURL = img.canvas.toDataURL();
+			var canvasDataURLRed = imgRed.canvas.toDataURL();
+			var canvasDataURLGreen = imgGreen.canvas.toDataURL();
+			var canvasDataURLBlue = imgBlue.canvas.toDataURL();
+			$.post("submitController.php", 
+				{
+					numScreen: screenNumber, 
+					imageBase64: canvasDataURL,
+					imageHex: hexArray,
+					imageRed: canvasDataURLRed,
+					imageGreen: canvasDataURLGreen,
+					imageBlue: canvasDataURLBlue
+				},
+				function(res) {
+					if (res.status != -1) {
+						alert("Imagen actualizada con exito");
+					}	
+					else
+						alert(res.error);
+				},
+				"json");
+		}
+		else {
+			image(savedCanvas,0,0);
+		}
+	},1);
 }
   
 //check for key press
 function keyPressed() {
-	if (canvasPrinted && !typingText) {
-		//check for the correct key
-		if (key == 'n' || key == 'N') {
-		//change brush type to normal brush
-		sel.selected(brushes[0]);
-		} else if (key == 's' || key == 'S') {
-		//change bbrush type to splatter brush
-		sel.selected(brushes[1]);
-		} else if (key == 'e' || key == 'E') {
-		//change brush type to eraser
-		sel.selected(brushes[2]);
-		} else if (key == '+') {
-		//increase brush thickness
-		slider.value(slider.value() + 1);
-		} else if (key == '-') {
-		//reduce brush thickness
-		slider.value(slider.value() - 1);
-		} else if (key == 'r' || key == 'R') {
-		//clear the background by calling clearBG() function
-		clearBG();
-		} else if (key == 'i' || key == 'I') {
-		//save the canvas as an image by calling saveImage()
-		SaveImage()
-		} else if (key == 'q'|| key == 'Q'){
-		//switch brush type to rectangle
-		sel.selected(brushes[3]);
-		}else if (key == 't'|| key == 'T'){
-		//switch brush type totriangle
-		sel.selected(brushes[4]);
+	if (canvasPrinted && focused) {
+		if(!typingText) {
+			//check for the correct key
+			if (key == 'p' || key == 'P') {
+			//change brush type to normal brush
+			sel.selected(brushes[0]);
+			} else if (key == 'a' || key == 'A') {
+			//change bbrush type to splatter brush
+			sel.selected(brushes[1]);
+			} else if (key == 'b' || key == 'B') {
+			//change brush type to eraser
+			sel.selected(brushes[2]);
+			} else if (key == 't'|| key == 'T'){
+			//switch brush type to text
+			sel.selected(brushes[3]);
+			}else if (key == '+') {
+			//increase brush thickness
+			slider.value(slider.value() + 1);
+			} else if (key == '-') {
+			//reduce brush thickness
+			slider.value(slider.value() - 1);
+			} else if (key == 'd' || key == 'D') {
+			//clear the background by calling clearBG() function
+			clearBG();
+			} else if (key == 'g' || key == 'G') {
+			//save the canvas as an image by calling saveImage()
+			saveImage()
+			} 
+		}
+		else {
+			if (!specialKeyCodes.includes(keyCode)) {
+				let str1 = typedText.substring(0,headText)+key;
+				let str2 = typedText.substring(headText,typedText.length);
+				typedText = str1+str2;
+				headText += 1;
+			} else if (keyCode == BACKSPACE) {
+				let str1 = typedText.substring(0,headText-1);
+				let str2 = typedText.substring(headText,typedText.length);
+				typedText = str1+str2;
+				if (typedText.length > 0)
+					headText -= 1;
+			} else if (keyCode == ENTER) {
+				stopTyping();
+			} else if (keyCode == 37) { //ARROWLEFT
+				if (headText > 0)
+					headText -= 1;
+			} else if (keyCode == 39) { //ARROWRIGHT
+				if (headText < typedText.length)
+					headText += 1;
+			} else if (keyCode == 46) { //SUPR
+				let str1 = typedText.substring(0,headText);
+				let str2 = typedText.substring(headText+1,typedText.length);
+				typedText = str1+str2;
+			} 
 		}
 	}
 }
@@ -423,232 +555,13 @@ function bitsToHex(bitsArray) {
     return hexArray;
 }
 
-  
-/*
-function createOptions(isText) {
-  var inputText = document.createElement("input");
-  inputText.setAttribute("type","radio");
-  inputText.setAttribute("id","selectText");
-  inputText.setAttribute("name","inputRadio");
-  inputText.setAttribute("onchange","screenSelected(true)");
-  var inputImage = document.createElement("input");
-  inputImage.setAttribute("type","radio");
-  inputImage.setAttribute("id","selectImage");
-  inputImage.setAttribute("name","inputRadio");
-  inputImage.setAttribute("onchange","screenSelected(false)");
-  if (isText)
-    inputText.setAttribute("checked","true")
-  else
-    inputImage.setAttribute("checked","true")
-
-  var labelText = document.createElement("label");
-  labelText.append(inputText);
-  labelText.append("Texto");
-  var labelImage = document.createElement("label");
-  labelImage.append(inputImage);
-  labelImage.append("Dibujar");
-  var divLabel = document.createElement("div");
-  divLabel.setAttribute("id","divInputLabel");
-  divLabel.append("Selecciona input: ");
-  divLabel.append(labelText);
-  divLabel.append(labelImage);
-
-  var inputOption = document.getElementById("inputOption");
-  inputOption.append(divLabel);
-}
-
-function createTextArea(screenNumber,textScreen) {
-	var labelForm = document.createElement("label");
-	//labelForm.innerHTML = "Introduce tu frase:";
-
-	var textAreaForm = document.createElement("textarea");
-	textAreaForm.setAttribute("name","textDisplay");
-	textAreaForm.innerHTML = textScreen;
-	//textAreaForm.setAttribute("value",res);
-
-	var numScreenForm = document.createElement("input");
-	numScreenForm.setAttribute("type","hidden");
-	numScreenForm.setAttribute("id","numScreen");
-	numScreenForm.setAttribute("name","numScreen");
-	numScreenForm.setAttribute("value",screenNumber);
-
-	var submitForm = document.createElement("input");
-	submitForm.setAttribute("type","submit");
-	submitForm.setAttribute("value","Guardar");
-	submitForm.setAttribute("id","button");
-
-	var textForm = document.createElement("form");
-	textForm.setAttribute("id","textInput");
-	//textForm.setAttribute("method","post");
-	//textForm.setAttribute("action","submitController.php");
-	textForm.onsubmit = function() {
-		$.post("submitController.php", 
-		{
-			numScreen: screenNumber, 
-			textDisplay: textAreaForm.value
-		},
-		function(res) {
-			if (res.status != -1) {
-				alert("Texto actualizado con exito");
-			}
-			else
-				alert(res.error);
-		},
-		"json");
-	}
-	textForm.append(labelForm);
-	textForm.append(textAreaForm);
-	textForm.append(numScreenForm);
-	textForm.append(submitForm);
-
-	var inputOption = document.getElementById("inputOption");
-	inputOption.append(textForm);
-}
-*/
-
-  /*
-function createDrawingArea(screenNumber,imageScreen) {
-	/*var brushes = document.createElement("div");
-	brushes.setAttribute("class","brushes");
-	for(let i=1;i<6;i++){
-		var button = document.createElement("button");
-		button.setAttribute("type","button");
-		button.setAttribute("value",i);
-		brushes.append(button);
+class Coordinates {
+	constructor(x, y) {
+		this.x = x;
+		this.y = y;
 	}
 
-	var leftBlock = document.createElement("div");
-	leftBlock.setAttribute("class", "left-block");
-	leftBlock.append("Grosor");
-	leftBlock.append(brushes);
-
-	var canvas = document.createElement("canvas");
-	canvas.setAttribute("id","paint-canvas");
-	canvas.setAttribute("width","256");
-	canvas.setAttribute("height","128");
-	var img = new Image;
-	img.onload = function(){
-		canvas.getContext("2d").drawImage(img,0,0); 
-	};
-	img.src = imageScreen;
-
-	var canvasDiv = document.createElement("div");
-	canvasDiv.setAttribute("id","canvasDiv");
-	canvasDiv.append(canvas);
-	
-	var clearButton = document.createElement("button");
-	clearButton.setAttribute("type","button");
-	clearButton.setAttribute("id","clear");
-	clearButton.innerHTML = "Borrar";
-	var saveButton = document.createElement("button");
-	saveButton.setAttribute("type","button");
-	saveButton.setAttribute("id","save");
-	saveButton.innerHTML = "Guardar";
-	var buttons = document.createElement("div");
-	buttons.setAttribute("id","divButtons");
-	buttons.append(clearButton);
-	buttons.append(saveButton);
-
-	var rigthBlock = document.createElement("div");
-	rigthBlock.setAttribute("class","right-block");
-	rigthBlock.append(canvasDiv);
-	rigthBlock.append(buttons);
-
-	var inputOption = document.getElementById("inputOption");
-	inputOption.append(leftBlock); 
-	inputOption.append(rigthBlock);
-
-	startDrawing(screenNumber);
-}
-
-function startDrawing(screenNumber){
-  // Definitions
-  var canvas = document.getElementById("paint-canvas");
-  var context = canvas.getContext("2d");
-  var boundings = canvas.getBoundingClientRect();
-
-  // Specifications
-  var mouseX = 0;
-  var mouseY = 0;
-  context.strokeStyle = 'black'; // initial brush color
-  context.lineWidth = 1; // initial brush width
-  var isDrawing = false;
-
-  // Handle Brushes
-  var brushes = document.getElementsByClassName('brushes')[0];
-
-  brushes.addEventListener('click', function(event) {
-    context.lineWidth = event.target.value || 1;
-  });
-
-  // Mouse Down Event
-  canvas.addEventListener('mousedown', function(event) {
-    setMouseCoordinates(event);
-    isDrawing = true;
-
-    // Start Drawing
-    context.beginPath();
-    context.moveTo(mouseX, mouseY);
-  });
-
-  // Mouse Move Event
-  canvas.addEventListener('mousemove', function(event) {
-    setMouseCoordinates(event);
-
-    if(isDrawing){
-      context.lineTo(mouseX, mouseY);
-      context.stroke();
-    }
-  });
-
-  // Mouse Up Event
-  canvas.addEventListener('mouseup', function(event) {
-    setMouseCoordinates(event);
-    isDrawing = false;
-  });
-
-  // Handle Mouse Coordinates
-  function setMouseCoordinates(event) {
-    mouseX = event.clientX - boundings.left;
-    mouseY = event.clientY - boundings.top;
+	distanceTo(coord) {
+		return Math.sqrt((this.x-coord.x)**2+(this.y-coord.y)**2)
+	}
   }
-
-  // Handle Clear Button
-  var clearButton = document.getElementById('clear');
-
-  clearButton.addEventListener('click', function() {
-    context.clearRect(0, 0, canvas.width, canvas.height);
-  });
-
-  // Handle Save Button
-  var saveButton = document.getElementById('save');
-
-  saveButton.addEventListener('click', function() {
-    var canvasDataURL = canvas.toDataURL();
-	base64ToBlackWhiteArray(canvasDataURL,function(canvasHex) {
-		$.post("submitController.php", 
-		{
-			numScreen: screenNumber, 
-			imageBase64: canvasDataURL,
-			imageHex: canvasHex
-		},
-		function(res) {
-			if (res.status != -1) {
-				alert("Imagen actualizada con exito");
-			}	
-			else
-				alert(res.error);
-			
-			location.reload();
-		},
-		"json");
-	});
-	
-    var imageName = prompt('Please enter image name');
-    var canvasDataURL = canvas.toDataURL();
-    var a = document.createElement('a');
-    a.href = canvasDataURL;
-    a.download = imageName || 'drawing';
-    a.click();
-  });
-}*/
