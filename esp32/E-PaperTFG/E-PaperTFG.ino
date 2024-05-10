@@ -25,7 +25,7 @@ GxEPD_Class display(io, 16, 4);
 const char* WIFI_SSID = "";
 const char* WIFI_PASSWORD = "";
 
-String HOST_NAME = "http://192."; // change to your PC's IP address
+String HOST_NAME = ""; // change to your PC's IP address
 String PATH_NAME   = "/InkScreen/screenController.php";
 String queryString = "?numScreen=1";
 
@@ -102,9 +102,6 @@ void setup()
 
   
   if (printStatus == 0) {
-    //std::string hexString = "0x7F";
-    // Convertir el string hexadecimal a uint8_t
-    //uint8_t hexValue = std::stoi(hexString, nullptr, 16);
     const char *newText = textPrinted.c_str();
     uint8_t imageHex[4096];
     int j = 0;
@@ -113,12 +110,9 @@ void setup()
         hexString.concat(newText[i]);
         hexString.concat(newText[i+1]);
         uint8_t hexValue = std::stoi(hexString.c_str(), nullptr, 16);
-        if (i < 32)
-          Serial.println(hexValue,BIN);
         imageHex[j] = hexValue;
         j++;
     }
-    //const uint8_t imageHexPrintable = 
     showImage(imageHex);
   }
   

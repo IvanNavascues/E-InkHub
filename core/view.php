@@ -19,6 +19,8 @@ class MainView extends View {
     public function printMainPage(){
         $page = $this->getPatternPage();
 
+        $page = str_replace("##style##",'<link rel="stylesheet" href="core/css/mainStyle.css">',$page);
+
         $newPortion = file_get_contents(__DIR__ . '/html/mainPage.html');
         $page = str_replace("##content##",$newPortion,$page);
 
@@ -47,6 +49,8 @@ class LoginView extends View {
     public function printLoginPage(){
         $page = $this->getPatternPage();
 
+        $page = str_replace("##style##",'',$page);
+        
         $newPortion = file_get_contents(__DIR__ . '/html/loginPage.html');
         $page = str_replace("##content##",$newPortion,$page);
         if ($this->loginFailed) {

@@ -13,8 +13,8 @@ var screenHeight;
 var minBrushThick = 1;
 var maxBrushThick = 40;
 var headText = 0;
-var typedText = "";
-var savedCanvas;
+var typedText = "_";
+var savedCanvas = null;
 var shapeSelected = "";
 var screenColor;
 var firstClick = null;
@@ -26,34 +26,34 @@ function screenSelected(){
 	canvasPrinted = false;
 	
 	if (selectValue != "") {
-		$.ajax({
-			type: "GET",
-			dataType: "json",
-			url: "screenController.php?numScreen="+selectValue,
+		//if (savedCanvas == null || (savedCanvas != null && confirm("Si?"))) {
+			$.ajax({
+				type: "GET",
+				dataType: "json",
+				url: "screenController.php?numScreen="+selectValue,
 
-			success: function (res) {
-				if (res.status == -1) {
-					alert(res.error);
-					console.error(res.error);
+				success: function (res) {
+					if (res.status == -1) {
+						alert(res.error);
+						console.error(res.error);
+					}
+					else {
+						screenWidth = res.width;
+						screenHeight = res.height;
+						screenColor = res.color;
+						savedCanvas = null;
+						setupCanvas(res.imageBase64);
+						canvasPrinted = true;
+					}
 				}
-				else {
-					screenWidth = res.width;
-					screenHeight = res.height;
-					screenColor = res.color;
-					setupCanvas(res.imageBase64);
-					canvasPrinted = true;
-				}
-			}
-		});
+			});
+		//}
 	}
 }
 
 function clearPage() {
   var inputOption = document.getElementById("inputOption");
   inputOption.innerHTML = '';
-  var mainDiv = document.createElement("main");
-  mainDiv.setAttribute("id","main");
-  inputOption.append(mainDiv);
 }
 
 ///CANVAS HANDLER///
@@ -65,29 +65,54 @@ function setupCanvas(canvasImage) {
 	noStroke();
   
 	//CREATE ELEMENTS:
+	$(function(){
+		$("#inputOption").load("core/html/canvas.html",function(){
+			//create canvas
+
+			pixelDensity(1); 
+			canvas = createCanvas(screenWidth, screenHeight);
+			canvas.background(bgcolor);
+			canvas.style('width','60%');
+			canvas.style('height','100%');
+			canvas.style('border','#64f1cb solid');
+
+			canvas.parent('#canvasDiv');
+
+			if (canvasImage != null) {
+				var raw = new Image();
+				raw.src = canvasImage;
+				raw.onload = function() {
+					let img = createImage(raw.width, raw.height);
+					img.resize(screenWidth,screenHeight);
+					img.drawingContext.drawImage(raw, 0, 0);
+					image(img, 0, 0); // draw the image, etc here
+				}	
+			}
+		}); 
+	  });
   
 	//create nav
-	navMain = createDiv();
-	navMain.id("optionsDiv");
-	navMain.parent("main");
+	/*navOptions = createDiv();
+	navOptions.id("optionsDiv");
+	navOptions.parent("#inputOption");
 
 	navColorPicker = createDiv(options[0]);
 	navColorPicker.id("colorPickerDiv");
    
-	navColorPicker.parent(navMain);
+	navColorPicker.parent("#colorPickerLi");
   
 	//create a colorpicker (to whoever is grading this, i'm using a colorpicker instead of multiple buttons for color because it's easier to implement and the user can personalize the color hoever they want.)
 	colorPicker = createColorPicker('#000000');
 	colorPicker.style('position','relative');
 	//colorPicker.position(10, 50);
   
-	colorPicker.parent(navColorPicker);
+	colorPicker.parent("#colorPickerLi");*/
   
 	//create a dropdown menu for brushes
-	navSel = createDiv(options[1]);
+	/*navSel = createDiv(options[1]);
 	navSel.id("brushSelDiv");
    
-	navSel.parent(navMain);
+	navSel.parent(navOptions);
   
 	sel = createSelect();
 	sel.id("brushSel");
@@ -98,13 +123,13 @@ function setupCanvas(canvasImage) {
 	  sel.option(item);
 	});
   
-	sel.parent(navSel);
-
+	sel.parent(navSel);*/
+/*
 	//create a dropdown menu for shapes
 	navSelShape = createDiv(options[2]);
 	navSelShape.id("shapeSelDiv");
    
-	navSelShape.parent(navMain);
+	navSelShape.parent(navOptions);
   
 	shapes.forEach((shape) => {
 		button = createButton(shape);
@@ -113,15 +138,16 @@ function setupCanvas(canvasImage) {
 		 });
 		button.style('position','relative');
 		button.style('width', 'auto');
-		button.style('height', '30px');
+		button.style('height', 'auto');
+		//button.style('border-style', 'inset');
 		button.parent(navSelShape);
-	});
-  
+	});*/
+  /*
 	//create a slider
 	navSlider = createDiv(options[3]);
 	navSlider.id("sliderDiv");
    
-	navSlider.parent(navMain);
+	navSlider.parent(navOptions);
   
 	slider = createSlider(minBrushThick, maxBrushThick, 20, 1);
 	//slider.position(370, 50);
@@ -129,61 +155,13 @@ function setupCanvas(canvasImage) {
 	//slider.style('height', '30px');
   
 	slider.parent(navSlider);
-  
-	//create canvas
-	navCanvas = createDiv();
-	navCanvas.id('canvasDiv');
-  
-	navCanvas.parent("main");
-  
-	canvas = createCanvas(screenWidth, screenHeight);
-	canvas.background(bgcolor);
-	canvas.style('width','60%');
-	canvas.style('height','100%');
-	canvas.style('border','#91f164 solid');
-  
-	canvas.parent(navCanvas);
-  
-	//create a button
-	navButtons = createDiv();
-	navButtons.id("buttonsDiv");
-   
-	navButtons.parent("main");
-
-	input = createFileInput(handleFile);
-	input.id('inputFile');
-	input.parent(navButtons);
-  
-	button = createButton("Borrar todo (D)");
-	button.style('position','relative');
-	button.style('width', '200px');
-	button.style('height', '30px');
-	button.mousePressed(clearBG);
-  
-	button.parent(navButtons);
-  
-	//create a button
-	button = createButton("Guardar (G)");
-	button.style('position','relative');
-	button.style('width', '200px');
-	button.style('height', '30px');
-	button.mousePressed(saveImage);
-  
-	button.parent(navButtons);
-
-	if (canvasImage != null) {
-		var raw = new Image();
-		raw.src = canvasImage;
-		raw.onload = function() {
-			img = createImage(raw.width, raw.height);
-			img.drawingContext.drawImage(raw, 0, 0);
-			image(img, 0, 0); // draw the image, etc here
-		}	
-	}
-	
+  */
 }
   
 function draw() {
+	var sel = select("#brushSel");
+	var colorPicker = select("#colorPicker");
+	var slider = select("#thickSlider");
 	if (canvasPrinted) {
 		noStroke();
 
@@ -192,7 +170,7 @@ function draw() {
 				//normal paint brush
 		
 				//draw a line with the correct color
-				stroke(colorPicker.color());
+				stroke(colorPicker.value());
 				strokeWeight(slider.value());
 				line(pmouseX, pmouseY, mouseX, mouseY);
 			}
@@ -205,9 +183,9 @@ function draw() {
 				//draw the ellipse
 				noStroke();
 		
-				fill(colorPicker.color());
+				fill(colorPicker.value());
 		
-				ellipse(mouseX + random(-width/7, width/7), mouseY + random(-height/7, height/7), slider.value(), slider.value());
+				ellipse(mouseX + random(-width/slider.value(), width/slider.value()), mouseY + random(-height/slider.value(), height/slider.value()), slider.value()/5, slider.value()/5);
 				}
 			}
 			if (sel.value() == brushes[2]) {
@@ -219,32 +197,32 @@ function draw() {
 				line(pmouseX, pmouseY, mouseX, mouseY);
 			}
 		}
-		else if (mouseInCanvas() && typingText) {
+		else if (mouseInCanvas() && typingText && !drawingShape) {
 			//stopTyping();
 			image(savedCanvas,0,0);
   			textSize(slider.value());
-			fill(colorPicker.color());
+			fill(colorPicker.value());
     		text(typedText, mouseX, mouseY);
-			stroke(colorPicker.color());
+			stroke(colorPicker.value());
 			strokeWeight(1);
-			let charSize = map(slider.value(),minBrushThick,maxBrushThick,1,21);
-			line(mouseX+charSize*headText,mouseY,mouseX+charSize+charSize*headText,mouseY);
+			//let charSize = map(slider.value(),minBrushThick,maxBrushThick,1,21);
+			//line(mouseX+charSize*headText,mouseY,mouseX+charSize+charSize*headText,mouseY);
 		}
 		else if (mouseInCanvas() && drawingShape) {
 			image(savedCanvas,0,0);
 			if (firstClick !== null) {
 				if (shapeSelected == shapes[0]) { //RECTANGLE
-					fill(colorPicker.color());
+					fill(colorPicker.value());
 					rect(firstClick.x,firstClick.y,mouseX-firstClick.x,mouseY-firstClick.y);
 				}
 				else if (shapeSelected == shapes[1]) { //TRIANGLE
-					fill(colorPicker.color());
+					fill(colorPicker.value());
 					let triHeight = firstClick.y-mouseY;
 					let triSize = 2*triHeight / Math.sqrt(3);
 					triangle(firstClick.x,firstClick.y,firstClick.x-triSize / 2,mouseY,firstClick.x + triSize / 2,mouseY);
 				}
 				else if (shapeSelected == shapes[2]) { //CIRCLE
-					fill(colorPicker.color());
+					fill(colorPicker.value());
 					circle(firstClick.x,firstClick.y,2*firstClick.distanceTo(new Coordinates(mouseX,mouseY)));
 				}
 			}
@@ -253,8 +231,9 @@ function draw() {
 }
 
 function mousePressed() {
-	if (canvasPrinted && focused) {
-		if (sel.value() == brushes[3] && !typingText) {
+	var sel = select("#brushSel");
+	if (canvasPrinted && focused && mouseButton === LEFT) {
+		if (sel.value() == brushes[3] && !typingText && mouseInCanvas()) {
 			startTyping();
 		}
 		else if (typingText) {
@@ -270,49 +249,57 @@ function mousePressed() {
 			}
 		}
 	}
+	else if (mouseButton === RIGHT) {
+		//alert("hola");
+	}
 }
 
 function startTyping() {
 	savedCanvas = get(0, 0, width, height);
 	typingText = true;
-	typedText = "";
+	typedText = "_";
 	headText = 0;
 }
 
 function stopTyping() {
+	var slider = select("#thickSlider");
+	var colorPicker = select("#colorPicker");
 	image(savedCanvas,0,0);
 	textSize(slider.value());
-	fill(colorPicker.color());
-	text(typedText, mouseX, mouseY);
+	fill(colorPicker.value());
+	let finalText = typedText.substring(0, headText) + typedText.substring(headText+1,typedText.length);
+	text(finalText, mouseX, mouseY);
 	typingText = false;
-	typedText = "";
+	typedText = "_";
 	headText = 0;
 }
 
 function startShape() {
 	savedCanvas = get(0, 0, width, height);
 	drawingShape = true;
+	typingText = false;
 	firstClick = new Coordinates(mouseX,mouseY);
 	lastClick = null;
 }
 
 function stopShape() {
+	var colorPicker = select("#colorPicker");
 	image(savedCanvas,0,0);
-	fill(colorPicker.color());
+	fill(colorPicker.value());
 	lastClick = new Coordinates(mouseX,mouseY);
 	if (shapeSelected != "") {
 		if (shapeSelected == shapes[0]) { //RECTANGLE
-			fill(colorPicker.color());
+			fill(colorPicker.value());
 			rect(firstClick.x,firstClick.y,lastClick.x-firstClick.x,lastClick.y-firstClick.y);
 		}
 		else if (shapeSelected == shapes[1]) { //TRIANGLE
-			fill(colorPicker.color());
+			fill(colorPicker.value());
 			let triHeight = firstClick.y-lastClick.y;
 			let triSize = 2*triHeight / Math.sqrt(3);
 			triangle(firstClick.x,firstClick.y,firstClick.x-triSize / 2,lastClick.y,firstClick.x + triSize / 2,lastClick.y);
 		}
 		else if (shapeSelected == shapes[2]) { //CIRCLE
-			fill(colorPicker.color());
+			fill(colorPicker.value());
 			circle(firstClick.x,firstClick.y,2*firstClick.distanceTo(lastClick));
 		}
 	}
@@ -356,6 +343,7 @@ function imgCreated(){
 	}
 
 	image(img, 0, 0);
+	g.remove();
 }
   
 function clearBG() {
@@ -375,6 +363,7 @@ function clearBG() {
 function saveImage() {
 	var screenNumber = document.getElementById("selScreen").value;
 	//var canvas = document.getElementById("defaultCanvas0");
+	savedCanvas = get(0, 0, width, height);
 	var img = get(0, 0, width, height);
 	img.loadPixels();
 	var imgRed = createImage(screenWidth, screenHeight);
@@ -408,7 +397,6 @@ function saveImage() {
 	imgGreen.updatePixels();
 	imgBlue.updatePixels();
 
-	savedCanvas = get(0, 0, width, height);
 	if (screenColor === screenTypes[0]) 
 		image(imgBW,0,0);
 	else if (screenColor === screenTypes[1])
@@ -451,6 +439,8 @@ function saveImage() {
   
 //check for key press
 function keyPressed() {
+	var slider = select("#thickSlider");
+	var sel = select("#brushSel");
 	if (canvasPrinted && focused) {
 		if(!typingText) {
 			//check for the correct key
@@ -472,12 +462,6 @@ function keyPressed() {
 			} else if (key == '-') {
 			//reduce brush thickness
 			slider.value(slider.value() - 1);
-			} else if (key == 'd' || key == 'D') {
-			//clear the background by calling clearBG() function
-			clearBG();
-			} else if (key == 'g' || key == 'G') {
-			//save the canvas as an image by calling saveImage()
-			saveImage()
 			} 
 		}
 		else {
@@ -495,16 +479,24 @@ function keyPressed() {
 			} else if (keyCode == ENTER) {
 				stopTyping();
 			} else if (keyCode == 37) { //ARROWLEFT
-				if (headText > 0)
+				if (headText > 0) {
+					typedText = typedText.replaceAt(headText,typedText[headText-1]);
+					typedText = typedText.replaceAt(headText-1,'_')
 					headText -= 1;
+				}
 			} else if (keyCode == 39) { //ARROWRIGHT
-				if (headText < typedText.length)
+				if (headText < typedText.length-1) {
+					typedText = typedText.replaceAt(headText,typedText[headText+1]);
+					typedText = typedText.replaceAt(headText+1,'_')
 					headText += 1;
+				}
 			} else if (keyCode == 46) { //SUPR
-				let str1 = typedText.substring(0,headText);
-				let str2 = typedText.substring(headText+1,typedText.length);
-				typedText = str1+str2;
-			} 
+				if (headText < typedText.length-1) {
+					let str1 = typedText.substring(0,headText+1);
+					let str2 = typedText.substring(headText+2,typedText.length);
+					typedText = str1+str2;
+				}
+			}
 		}
 	}
 }
@@ -564,4 +556,8 @@ class Coordinates {
 	distanceTo(coord) {
 		return Math.sqrt((this.x-coord.x)**2+(this.y-coord.y)**2)
 	}
-  }
+}
+  
+String.prototype.replaceAt = function(index, replacement) {
+    return this.substring(0, index) + replacement + this.substring(index + replacement.length);
+}

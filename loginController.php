@@ -12,7 +12,7 @@
         }
         else {
             $vista = new View();
-            $vista->showAlert("Inicio de sesión no valido");
+            $vista->showAlert("Credenciales no válidas");
         }
     }
     

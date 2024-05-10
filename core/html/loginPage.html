@@ -1,13 +1,21 @@
-<nav id="topNav">
-    <ul id="menuList">
-        <li><a href="">Inicio</a></li>
-    </ul>
-</nav>
-
-<form action="loginController.php" method="post" id="loginForm">
-    <label for="usernameInput">Usuario: </label>
-    <input type="text" id="usernameInput" name="username" required>
-    <label for="passwordInput">Contraseña: </label>
-    <input type="password" id="passwordInput" name="password">
-    <input type="submit" value="Iniciar sesión" class="boton">
-</form>
+<div class="container col-xl-10 col-xxl-8 px-4 py-5">
+    <div class="row align-items-center g-lg-5 py-5">
+        <div class="col-lg-7 text-center text-lg-start">
+            <h1 class="display-4 fw-bold lh-1 text-body-emphasis mb-3">Bienvenido a E-Ink Hub</h1>
+            <p class="col-lg-10 fs-4">Inicie sesión para configurar sus pantallas asignadas.</p>
+        </div>
+        <div class="col-md-10 mx-auto col-lg-5">
+            <form class="p-4 p-md-5 border rounded-3 bg-body-tertiary" action="loginController.php" method="post" id="loginForm">
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="usernameInput" name="username" required>
+                <label for="usernameInput">Usuario</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="password" class="form-control" id="passwordInput" name="password">
+                <label for="passwordInput">Contraseña</label>
+            </div>
+            <button class="w-100 btn btn-lg btn-primary" type="submit">Iniciar Sesion</button>
+            </form>
+        </div>
+    </div>
+</div>

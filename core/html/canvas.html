@@ -1,0 +1,66 @@
+<nav class="navbar navbar-expand" aria-label="Second navbar example" id="optionNav">
+    <div class="container-fluid">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample08" aria-controls="navbarsExample08" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse justify-content-around" id="navbarsExample08">
+        <ul class="navbar-nav container">
+            <li class="nav-item px-4 pb-2 col-2" id="colorPickerLi">
+                <label for="colorPicker" class= "h3">Color</label>
+                <input type="color" class="form-control form-control-color" style="position: relative;" id="colorPicker">
+            </li>
+            <li class="nav-item px-4 col-3">
+                <label for="brushSel" class="form-label h3">Herramienta</label>
+                <select class="form-select" id="brushSel" required="" onchange="changeShape('')">
+                    <option>Pincel (P)</option>
+                    <option>Aerografo (A)</option>
+                    <option>Borrador (B)</option>
+                    <option>Texto (T)</option>
+                </select>
+                <div class="invalid-feedback">
+                Opcion no valida.
+                </div>
+            </li>
+            <li class="nav-item container px-4 col-5">
+                <div class="row">
+                    <text class="h3">Formas</text>
+                </div>
+                <div class="row">
+                    <button class="btn btn-info row-2 col-3" data-toggle="button" aria-pressed="false" autocomplete="off" onclick="changeShape('Rectangulo')">Rectangulo</button>
+                    <button class="btn btn-info row-2 col-3 mx-1" data-toggle="button" aria-pressed="false" autocomplete="off" onclick="changeShape('Triangulo')">Triangulo</button>
+                    <button class="btn btn-info row-2 col-3 " data-toggle="button" aria-pressed="false" autocomplete="off" onclick="changeShape('Circulo')">Circulo</button>
+                </div>
+            </li>
+            <li class="nav-item container px-4 col-2">
+                <div class="row">
+                    <label for="thickSlider" class="form-label h3">-Grosor+</label>
+                </div>
+                <div class="row">
+                    <input type="range" class="form-range" id="thickSlider" min="0" max="40" value="20" step="1">
+                </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+</nav>
+
+<div id="canvasDiv">
+
+</div>
+<div id="buttonsDiv" class="container-fluid pt-2">
+    <div class="row d-flex justify-content-center">
+        <div class="col-5">
+            <label for="inputFile" class="form-label h5">Insertar imagen: </label>
+            <input class="form-control" type="file" id="inputFile">
+        </div>
+    </div>
+    <div class="row mt-4 pb-4">
+        <div class="col d-flex justify-content-center">
+            <button class="btn btn-danger" onclick="clearBG()">Borrar todo</button>
+        </div>
+        <div class="col d-flex justify-content-center">
+            <button class="btn btn-primary btn-lg" onclick="saveImage()">Guardar</button>
+        </div>
+    </div>
+</div>

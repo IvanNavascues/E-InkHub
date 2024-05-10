@@ -1,18 +1,20 @@
-<nav id="topNav">
-    <ul id="menuList">
-        <li><a href="index.php?logout">Cerrar Sesion</a></li>
-    </ul>
-</nav>
-
-<div id="divSelScreen">
-    <select id="selScreen" name="selScreen" onchange="screenSelected()">
-        <option value="">--Elige una pantalla--</option>
-        ##screens##
-    </select>
-</div>
+<nav class="py-3 bg-secondary border-bottom">
+    <div class="container d-flex flex-wrap">
+		<ul class="nav me-auto">
+			<li>
+				<div id="divSelScreen" class="input-group container">
+					<select id="selScreen" name="selScreen" class="form-select " onchange="screenSelected()">
+						<option value="">--Elige pantalla--</option>
+						##screens##
+					</select>
+				</div>
+			</li>
+		</ul>
+		<ul class="nav">
+			<li class="nav-item"><a href="index.php?logout" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Cerrar Sesion</a></li>
+		</ul>
+    </div>
+  </nav>
 
 <div id="inputOption">
-    <main id="main">
-        
-    </main>
 </div>
