@@ -371,26 +371,29 @@ function saveImage() {
 						alert(res.error);
 				},
 				"json");*/
-			$.ajax({
-				type: "POST",
-				url: "submitController.php",
-				data: {
-					numScreen: screenNumber, 
+			
+			const xhr = new XMLHttpRequest();
+			xhr.open("POST", "submitController.php");
+			xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8")
+
+			const body = JSON.stringify( {
+					numScreen: parseInt(screenNumber), 
 					imageBase64: canvasDataURL,
 					imageHex: hexArray,
 					imageRed: canvasDataURLRed,
 					imageGreen: canvasDataURLGreen,
 					imageBlue: canvasDataURLBlue
-				},
-				success: function(res) {
-					if (res.status != -1) {
-						alert("Imagen actualizada con exito");
-					}	
-					else
-						alert(res.error);
-				},
-				dataType: "json"
 				});
+			  xhr.onload = () => {
+				if (xhr.readyState == 4 && xhr.status == 201) {
+				  console.log(JSON.parse(xhr.responseText));
+				  alert("Imagen actualizada con exito");
+				} else {
+				  console.log(`Error: ${xhr.status}`);
+				}
+			  };
+			  xhr.send(body);
+
 		}
 		else {
 			image(savedCanvas,0,0);
