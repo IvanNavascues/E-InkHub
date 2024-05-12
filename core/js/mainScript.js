@@ -377,6 +377,8 @@ function saveImage() {
 					'Accept': 'application/json',
 					'Content-Type': 'application/json'
 				}
+			}).then((response) => {
+				return response.json()
 			}).then((res) => {
 				if (res.status != -1) {
 					alert("Imagen actualizada con exito");
