@@ -3,7 +3,7 @@ var options = ["Color: ","Herramienta: ","Formas: ","Grosor (- +): "];
 var brushes = ["Pincel (P)","Aerografo (A)","Borrador (B)","Texto (T)"];
 var shapes = ["Rectangulo","Triangulo","Circulo"];
 var specialKeyCodes = [8,9,13,16,17,18,20,27,33,34,35,36,37,38,39,40,44,46,144];
-var screenTypes = ["b&w","r","g","b","rgb"];
+var screenTypes = ["bw","r","g","b","rgb"];
 
 var canvasPrinted = false;
 var typingText = false;
@@ -68,7 +68,6 @@ function setupCanvas(canvasImage) {
 	$(function(){
 		$("#inputOption").load("core/html/canvas.html",function(){
 			//create canvas
-
 			pixelDensity(1); 
 			canvas = createCanvas(screenWidth, screenHeight);
 			canvas.background(bgcolor);
@@ -90,72 +89,6 @@ function setupCanvas(canvasImage) {
 			}
 		}); 
 	  });
-  
-	//create nav
-	/*navOptions = createDiv();
-	navOptions.id("optionsDiv");
-	navOptions.parent("#inputOption");
-
-	navColorPicker = createDiv(options[0]);
-	navColorPicker.id("colorPickerDiv");
-   
-	navColorPicker.parent("#colorPickerLi");
-  
-	//create a colorpicker (to whoever is grading this, i'm using a colorpicker instead of multiple buttons for color because it's easier to implement and the user can personalize the color hoever they want.)
-	colorPicker = createColorPicker('#000000');
-	colorPicker.style('position','relative');
-	//colorPicker.position(10, 50);
-  
-	colorPicker.parent("#colorPickerLi");*/
-  
-	//create a dropdown menu for brushes
-	/*navSel = createDiv(options[1]);
-	navSel.id("brushSelDiv");
-   
-	navSel.parent(navOptions);
-  
-	sel = createSelect();
-	sel.id("brushSel");
-	sel.mouseClicked(() => {
-		changeShape("")
-	 });
-	brushes.forEach((item) => {
-	  sel.option(item);
-	});
-  
-	sel.parent(navSel);*/
-/*
-	//create a dropdown menu for shapes
-	navSelShape = createDiv(options[2]);
-	navSelShape.id("shapeSelDiv");
-   
-	navSelShape.parent(navOptions);
-  
-	shapes.forEach((shape) => {
-		button = createButton(shape);
-		button.mousePressed(() => {
-			changeShape(shape)
-		 });
-		button.style('position','relative');
-		button.style('width', 'auto');
-		button.style('height', 'auto');
-		//button.style('border-style', 'inset');
-		button.parent(navSelShape);
-	});*/
-  /*
-	//create a slider
-	navSlider = createDiv(options[3]);
-	navSlider.id("sliderDiv");
-   
-	navSlider.parent(navOptions);
-  
-	slider = createSlider(minBrushThick, maxBrushThick, 20, 1);
-	//slider.position(370, 50);
-	slider.style('width', '180px');
-	//slider.style('height', '30px');
-  
-	slider.parent(navSlider);
-  */
 }
   
 function draw() {
@@ -413,7 +346,7 @@ function saveImage() {
 			var canvasDataURLRed = imgRed.canvas.toDataURL();
 			var canvasDataURLGreen = imgGreen.canvas.toDataURL();
 			var canvasDataURLBlue = imgBlue.canvas.toDataURL();
-			$.post("submitController.php", 
+			$.post("https://e-inkhub.azurewebsites.net/submitController.php", 
 				{
 					numScreen: screenNumber, 
 					imageBase64: canvasDataURL,
