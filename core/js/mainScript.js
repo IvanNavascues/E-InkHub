@@ -83,7 +83,7 @@ function setupCanvas(canvasImage) {
 			inputFile.attribute("accept","image/*");
 			inputFile.id("inputFile");
 
-			inputFile.parent("#inputFileDiv");
+			inputFile.parent("#fileInputDiv");
 
 			if (canvasImage != null) {
 				var raw = new Image();
@@ -371,31 +371,26 @@ function saveImage() {
 						alert(res.error);
 				},
 				"json");*/
-			fetch("submitController.php", {
-				method: 'post',
-				body: JSON.stringify({
-					numScreen: parseInt(screenNumber), 
+			$.ajax({
+				type: "POST",
+				url: "submitController.php",
+				data: {
+					numScreen: screenNumber, 
 					imageBase64: canvasDataURL,
 					imageHex: hexArray,
 					imageRed: canvasDataURLRed,
 					imageGreen: canvasDataURLGreen,
 					imageBlue: canvasDataURLBlue
-				}),
-				headers: {
-					'Accept': 'application/json',
-					'Content-Type': 'application/json'
-				}
-			}).then((response) => {
-				return response.json()
-			}).then((res) => {
-				if (res.status != -1) {
-					alert("Imagen actualizada con exito");
-				}	
-				else
-					alert(res.error);
-			}).catch((error) => {
-				console.log(error)
-			})
+				},
+				success: function(res) {
+					if (res.status != -1) {
+						alert("Imagen actualizada con exito");
+					}	
+					else
+						alert(res.error);
+				},
+				dataType: "json"
+				});
 		}
 		else {
 			image(savedCanvas,0,0);
