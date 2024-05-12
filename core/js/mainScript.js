@@ -72,10 +72,18 @@ function setupCanvas(canvasImage) {
 			canvas = createCanvas(screenWidth, screenHeight);
 			canvas.background(bgcolor);
 			canvas.style('width','60%');
-			canvas.style('height','100%');
+			canvas.style('height','100%');	
 			canvas.style('border','#64f1cb solid');
 
 			canvas.parent('#canvasDiv');
+				
+  			inputFile = createFileInput(handleFile);
+			inputFile.class("form-control");
+			inputFile.attribute("type","file");
+			inputFile.attribute("accept","image/*");
+			inputFile.id("inputFile");
+
+			inputFile.parent("#inputFileDiv");
 
 			if (canvasImage != null) {
 				var raw = new Image();
@@ -366,7 +374,7 @@ function saveImage() {
 			fetch("submitController.php", {
 				method: 'post',
 				body: JSON.stringify({
-					numScreen: screenNumber, 
+					numScreen: parseInt(screenNumber), 
 					imageBase64: canvasDataURL,
 					imageHex: hexArray,
 					imageRed: canvasDataURLRed,
