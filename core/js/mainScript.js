@@ -354,7 +354,7 @@ function saveImage() {
 			var canvasDataURLRed = imgRed.canvas.toDataURL();
 			var canvasDataURLGreen = imgGreen.canvas.toDataURL();
 			var canvasDataURLBlue = imgBlue.canvas.toDataURL();
-			/*$.post("submitController.php", 
+			$.post("submitController.php", 
 				{
 					numScreen: screenNumber, 
 					imageBase64: canvasDataURL,
@@ -370,8 +370,9 @@ function saveImage() {
 					else
 						alert(res.error);
 				},
-				"json");*/
+				"json");
 			
+				/*
 			const xhr = new XMLHttpRequest();
 			xhr.open("POST", "submitController.php");
 			xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8")
@@ -396,7 +397,7 @@ function saveImage() {
 				  console.log(`Error: ${xhr.status}`);
 				}
 			  };
-			  xhr.send(body);
+			  xhr.send(body);*/
 
 		}
 		else {
