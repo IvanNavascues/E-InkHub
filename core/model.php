@@ -118,8 +118,9 @@ class PrintScreenModule extends Model {
         try {
             $conn = DatabaseConnSingleton::getConn();
 
-            $query = "UPDATE screens SET imageBase64 = '".$imageBase64."',imageHex = '".$imageHex."',imageRed = '".$imageRed."',imageGreen = '".$imageGreen."',imageBlue = '".$imageBlue."' WHERE id = '".$numScreen."'";
-            $stmt = sqlsrv_query( $conn, $query);
+            $query = "UPDATE screens SET imageBase64 = ?,imageHex = ?,imageRed = ?,imageGreen = ?,imageBlue = ? WHERE id = ?";
+            $params = array($numScreen,$imageBase64,$imageHex,$imageRed,$imageGreen,$imageBlue);
+            $stmt = sqlsrv_query( $conn, $query, $params);
             if($stmt) {
                 sqlsrv_commit($conn);
             }
