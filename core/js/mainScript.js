@@ -377,12 +377,12 @@ function saveImage() {
 			xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8")
 
 			const body = JSON.stringify( {
-					numScreen: parseInt(screenNumber), 
-					imageBase64: canvasDataURL,
-					imageHex: hexArray,
-					imageRed: canvasDataURLRed,
-					imageGreen: canvasDataURLGreen,
-					imageBlue: canvasDataURLBlue
+					"numScreen": parseInt(screenNumber), 
+					"imageBase64": canvasDataURL,
+					"imageHex": hexArray,
+					"imageRed": canvasDataURLRed,
+					"imageGreen": canvasDataURLGreen,
+					"imageBlue": canvasDataURLBlue
 				});
 			  xhr.onload = () => {
 				if (xhr.readyState == 4) {
