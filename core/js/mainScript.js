@@ -365,14 +365,14 @@ function saveImage() {
 				"json");*/
 			fetch("submitController.php", {
 				method: 'post',
-				body: {
+				body: JSON.stringify({
 					numScreen: screenNumber, 
 					imageBase64: canvasDataURL,
 					imageHex: hexArray,
 					imageRed: canvasDataURLRed,
 					imageGreen: canvasDataURLGreen,
 					imageBlue: canvasDataURLBlue
-				},
+				}),
 				headers: {
 					'Accept': 'application/json',
 					'Content-Type': 'application/json'
