@@ -385,9 +385,13 @@ function saveImage() {
 					imageBlue: canvasDataURLBlue
 				});
 			  xhr.onload = () => {
-				if (xhr.readyState == 4 && xhr.status == 201) {
-				  console.log(JSON.parse(xhr.responseText));
-				  alert("Imagen actualizada con exito");
+				if (xhr.readyState == 4) {
+					var res = JSON.parse(xhr.responseText);
+					if (res.status != -1) {
+						alert("Imagen actualizada con exito");
+					}	
+					else
+						console.log(`Error: ${res.error}`);
 				} else {
 				  console.log(`Error: ${xhr.status}`);
 				}
