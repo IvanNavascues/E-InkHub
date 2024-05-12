@@ -363,25 +363,28 @@ function saveImage() {
 						alert(res.error);
 				},
 				"json");*/
-			$.ajax({
-				type:"POST",
-				url:"submitController.php", 
-				data: {
+			fetch("submitController.php", {
+				method: 'post',
+				body: {
 					numScreen: screenNumber, 
 					imageBase64: canvasDataURL,
 					imageHex: hexArray,
 					imageRed: canvasDataURLRed,
 					imageGreen: canvasDataURLGreen,
 					imageBlue: canvasDataURLBlue
-				}, 
-				success:function(res){ 
-					if (res.status != -1) {
-						alert("Imagen actualizada con exito");
-					}	
-					else
-						alert(res.error);
 				},
-				dataType: "json"
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				}
+			}).then((res) => {
+				if (res.status != -1) {
+					alert("Imagen actualizada con exito");
+				}	
+				else
+					alert(res.error);
+			}).catch((error) => {
+				console.log(error)
 			})
 		}
 		else {
