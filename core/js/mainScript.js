@@ -346,7 +346,7 @@ function saveImage() {
 			var canvasDataURLRed = imgRed.canvas.toDataURL();
 			var canvasDataURLGreen = imgGreen.canvas.toDataURL();
 			var canvasDataURLBlue = imgBlue.canvas.toDataURL();
-			$.post("e-inkhub.azurewebsites.net/submitController.php", 
+			/*$.post("submitController.php", 
 				{
 					numScreen: screenNumber, 
 					imageBase64: canvasDataURL,
@@ -362,7 +362,27 @@ function saveImage() {
 					else
 						alert(res.error);
 				},
-				"json");
+				"json");*/
+			$.ajax({
+				type:"POST",
+				url:"submitController.php", 
+				data: {
+					numScreen: screenNumber, 
+					imageBase64: canvasDataURL,
+					imageHex: hexArray,
+					imageRed: canvasDataURLRed,
+					imageGreen: canvasDataURLGreen,
+					imageBlue: canvasDataURLBlue
+				}, 
+				success:function(res){ 
+					if (res.status != -1) {
+						alert("Imagen actualizada con exito");
+					}	
+					else
+						alert(res.error);
+				},
+				dataType: "json"
+			})
 		}
 		else {
 			image(savedCanvas,0,0);
