@@ -346,7 +346,7 @@ function saveImage() {
 			var canvasDataURLRed = imgRed.canvas.toDataURL();
 			var canvasDataURLGreen = imgGreen.canvas.toDataURL();
 			var canvasDataURLBlue = imgBlue.canvas.toDataURL();
-			$.post("https://e-inkhub.azurewebsites.net/submitController.php", 
+			$.post("e-inkhub.azurewebsites.net/submitController.php", 
 				{
 					numScreen: screenNumber, 
 					imageBase64: canvasDataURL,
