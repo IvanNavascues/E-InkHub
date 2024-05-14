@@ -18,6 +18,7 @@ var headText = 0;
 var typedText = "_";
 var savedCanvas = null;
 var shapeSelected = "";
+var toolSelected = brushes[0];
 var screenColor;
 var firstClick = null;
 var lastClick = null;
@@ -112,14 +113,14 @@ function setupCanvas(canvasImage) {
 }
   
 function draw() {
-	var sel = select("#brushSel");
+	//var sel = select("#brushSel");
 	var colorPicker = select("#colorPicker");
 	var slider = select("#thickSlider");
 	if (canvasPrinted) {
 		noStroke();
 
 		if (mouseIsPressed && mouseInCanvas() && !typingText && focused && !drawingShape) {
-			if (sel.value() == brushes[0]) {
+			if (toolSelected == brushes[0]) {
 				//normal paint brush
 		
 				//draw a line with the correct color
@@ -127,7 +128,7 @@ function draw() {
 				strokeWeight(slider.value());
 				line(pmouseX, pmouseY, mouseX, mouseY);
 			}
-			if (sel.value() == brushes[1]) {
+			if (toolSelected == brushes[1]) {
 				//splatter brush
 		
 				//draw ellipses with the correct thickness at random locations a random amount of times
@@ -141,7 +142,7 @@ function draw() {
 				ellipse(mouseX + random(-width/slider.value(), width/slider.value()), mouseY + random(-height/slider.value(), height/slider.value()), slider.value()/5, slider.value()/5);
 				}
 			}
-			if (sel.value() == brushes[2]) {
+			if (toolSelected == brushes[2]) {
 				//eraser
 		
 				//draw a line in background color
@@ -184,9 +185,9 @@ function draw() {
 }
 
 function mousePressed() {
-	var sel = select("#brushSel");
+	//var sel = select("#brushSel");
 	if (canvasPrinted && focused && mouseButton === LEFT) {
-		if (sel.value() == brushes[3] && !typingText && mouseInCanvas()) {
+		if (toolSelected == brushes[3] && !typingText && mouseInCanvas()) {
 			startTyping();
 		}
 		else if (typingText) {
@@ -264,6 +265,7 @@ function stopShape() {
 
 function changeShape(shape) {
 	if (shape != "") {
+		changeTool('');
 		savedCanvas = get(0, 0, width, height);
 		drawingShape = true;
 	}
@@ -271,6 +273,16 @@ function changeShape(shape) {
 		drawingShape = false;
 	}
 	shapeSelected = shape;
+}
+
+function changeTool(tool) {
+	if (tool !== "") {
+		changeShape('');
+		toolSelected = brushes[tool];
+	}
+	else {
+		toolSelected = '';
+	}
 }
 
 function handleFile(file){
@@ -421,22 +433,22 @@ function saveImage() {
 //check for key press
 function keyPressed() {
 	var slider = select("#thickSlider");
-	var sel = select("#brushSel");
+	//var sel = select("#brushSel");
 	if (canvasPrinted && focused) {
 		if(!typingText) {
 			//check for the correct key
 			if (key == 'p' || key == 'P') {
 			//change brush type to normal brush
-			sel.selected(brushes[0]);
+			toolSelected = brushes[0];
 			} else if (key == 'a' || key == 'A') {
 			//change bbrush type to splatter brush
-			sel.selected(brushes[1]);
+			toolSelected = brushes[1];
 			} else if (key == 'b' || key == 'B') {
 			//change brush type to eraser
-			sel.selected(brushes[2]);
+			toolSelected = brushes[2];
 			} else if (key == 't'|| key == 'T'){
 			//switch brush type to text
-			sel.selected(brushes[3]);
+			toolSelected = brushes[3];
 			}else if (key == '+') {
 			//increase brush thickness
 			slider.value(slider.value() + 1);
