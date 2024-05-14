@@ -25,9 +25,9 @@ GxEPD_Class display(io, 16, 4);
 const char* WIFI_SSID = "";
 const char* WIFI_PASSWORD = "";
 
-String HOST_NAME = "https://192.168.0.16"; // change to your PC's IP address
-String PATH_NAME   = "/screenController.php";
-String queryString = "?numScreen=";
+String HOST_NAME = "http://192.168.0.16"; // change to your PC's IP address
+String PATH_NAME   = "/InkScreen/screenController.php";
+String queryString = "?macScreen=";
 
 void setup()
 {

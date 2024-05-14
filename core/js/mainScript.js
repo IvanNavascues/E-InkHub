@@ -8,6 +8,8 @@ var screenTypes = ["bw","r","g","b","rgb"];
 var canvasPrinted = false;
 var typingText = false;
 var drawingShape = false;
+var lastScreen = '';
+var currentScreen;
 var screenWidth;
 var screenHeight;
 var minBrushThick = 1;
@@ -21,16 +23,17 @@ var firstClick = null;
 var lastClick = null;
 
 function screenSelected(){
-	var selectValue = document.getElementById("selScreen").value;
+	currentScreen = document.getElementById("selScreen").value;
 	clearPage();
 	canvasPrinted = false;
 	
-	if (selectValue != "") {
-		//if (savedCanvas == null || (savedCanvas != null && confirm("Si?"))) {
+	if (currentScreen != "") {
+		if (lastScreen != '' && confirm("Se perderá todo el progreso, ¿Continuar?") || lastScreen === '') {
+			lastScreen = currentScreen;
 			$.ajax({
 				type: "GET",
 				dataType: "json",
-				url: "screenController.php?numScreen="+selectValue,
+				url: "screenController.php?numScreen="+currentScreen,
 
 				success: function (res) {
 					if (res.status == -1) {
@@ -47,13 +50,17 @@ function screenSelected(){
 					}
 				}
 			});
-		//}
+		}
 	}
 }
 
 function clearPage() {
-  var inputOption = document.getElementById("inputOption");
-  inputOption.innerHTML = '';
+	var inputOption = document.getElementById("inputOption");
+	inputOption.innerHTML = '';
+	var modifyLi = document.getElementById("modifyLi");
+	modifyLi.innerHTML = '';
+	var deleteLi = document.getElementById("deleteLi");
+	deleteLi.innerHTML = '';
 }
 
 ///CANVAS HANDLER///
@@ -67,6 +74,11 @@ function setupCanvas(canvasImage) {
 	//CREATE ELEMENTS:
 	$(function(){
 		$("#inputOption").load("core/html/canvas.html",function(){
+			//create mod and del options
+			var modifyLi = document.getElementById("modifyLi");
+			modifyLi.innerHTML = '<a class="nav-link active fs-4 fw-semibold ms-2" aria-current="page" href=newScreenController.php?modify='+currentScreen+'>Modificar pantalla</a>';
+			var deleteLi = document.getElementById("deleteLi");
+			deleteLi.innerHTML = '<a class="nav-link active fs-4 fw-medium ms-2" aria-current="page" href=newScreenController.php?delete='+currentScreen+' onclick="return confirm(\'¡ATENCIÓN! Se eliminará la pantalla del sistema, ¿Quiere continuar?\');">Eliminar pantalla</a>';
 			//create canvas
 			pixelDensity(1); 
 			canvas = createCanvas(screenWidth, screenHeight);

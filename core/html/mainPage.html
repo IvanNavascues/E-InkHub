@@ -1,18 +1,44 @@
-<nav class="py-3 bg-secondary border-bottom">
-    <div class="container d-flex flex-wrap">
-		<ul class="nav me-auto">
-			<li>
+<nav class="navbar navbar-expand navbar-dark bg-dark" aria-label="Second navbar example">
+    <div class="container-fluid">
+      <a class="navbar-brand fs-2 fw-bold me-4" href="">E-Ink Hub</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample02" aria-controls="navbarsExample02" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" >
+        <ul class="navbar-nav me-auto">
+			<li class="nav-item">
 				<div id="divSelScreen" class="input-group container">
-					<select id="selScreen" name="selScreen" class="form-select " onchange="screenSelected()">
-						<option value="">--Elige pantalla--</option>
+					<select id="selScreen" name="selScreen" class="form-select fs-4 fw-semibold" onchange="screenSelected()">
+						<option value="" selected disabled hidden>Elige pantalla</option>
 						##screens##
 					</select>
 				</div>
 			</li>
-		</ul>
-		<ul class="nav">
-			<li class="nav-item"><a href="index.php?logout" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Cerrar Sesion</a></li>
-		</ul>
+			<li class="nav-item">
+				<div class="dropdown">
+					<button class="btn btn-dark dropdown-toggle fs-4 fw-semibold" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+					Añadir pantalla
+					</button>
+					<ul class="dropdown-menu dropdown-menu-dark">
+						<li><a class="dropdown-item" href="newScreenController.php">Nueva pantalla</a></li>
+						<li><a class="dropdown-item" href="#" id="addByMacOpt" onclick="addScreenByMac();">Pantalla existente</a></li>
+						<script>
+							function addScreenByMac() {
+								var opt = document.getElementById("addByMacOpt");
+								opt.setAttribute("href","newScreenController.php?mac="+prompt('Inserta MAC del dispositivo'));
+							}
+						</script>
+					</ul>
+				</div>
+			</li>
+			<li class="nav-item" id="modifyLi">
+			</li>
+			<li class="nav-item" id="deleteLi">
+			</li>
+        </ul>
+        <a href="index.php?logout" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Cerrar Sesion</a>
+      </div>
     </div>
   </nav>
 

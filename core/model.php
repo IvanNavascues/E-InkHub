@@ -8,6 +8,7 @@ class Model
 
 class Screen {
     private $id;
+    private $mac;
     private $name;
     private $width;
     private $height;
@@ -18,8 +19,9 @@ class Screen {
     private $imageGreen;
     private $imageBlue;
 
-    public function __construct($id,$name,$width,$height,$color,$imageBase64,$imageHex,$imageRed,$imageGreen,$imageBlue) {
+    public function __construct($id,$mac,$name,$width,$height,$color,$imageBase64,$imageHex,$imageRed,$imageGreen,$imageBlue) {
         $this->id = $id;
+        $this->mac = $mac;
         $this->name = $name;
         $this->width = $width;
         $this->height = $height;
@@ -33,6 +35,10 @@ class Screen {
 
     public function getId() {
         return $this->id;
+    }
+
+    public function getMac() {
+        return $this->mac;
     }
 
     public function getName() {
@@ -99,7 +105,7 @@ class PrintScreenModule extends Model {
         $conn = DatabaseConnSingleton::getConn();
 
         $screenList = array();
-        $query = "SELECT screens.* FROM screens JOIN userscreens ON screens.id = userscreens.idScreen WHERE userscreens.idUser = ".$idUser;
+        $query = "SELECT screens.* FROM screens JOIN userscreens ON screens.id = userscreens.macScreen WHERE userscreens.idUser = ".$idUser;
         
         $getScreens = sqlsrv_query($conn, $query);
         if ($getScreens == FALSE) {
@@ -160,6 +166,30 @@ class PrintScreenModule extends Model {
         }
     }*/
 
+    public function createScreenForUser($screen,$idUser) {
+        $conn = DatabaseConnSingleton::getConn();
+        $result = -1;
+
+        $existingScreen = $this->getScreenPrintableByMac($screen->getMac());
+        if ($existingScreen != null) {
+            $result = 1;
+            $idNewScreen = $existingScreen->getId();
+        }
+        else {
+            $query = "INSERT INTO screens (MAC, name, width, height, color) 
+                        VALUES ('".$screen->getMac()."', '".$screen->getName()."', '".$screen->getWidth()."','".$screen->getHeight()."','".$screen->getColor()."')";
+            if ($conn->query("$query")) {
+                $result = 0;
+                $idNewScreen = $this->getScreenPrintableByMac($screen->getMac())->getId();
+            }
+        }
+
+        $query = "INSERT INTO userscreens (idUser, idScreen) VALUES ('".$idUser."', '".$idNewScreen."')";
+        $conn->query("$query");
+
+        return $result;
+    }
+
     public function getScreens($idUser) {
         $conn = DatabaseConnSingleton::getConn();
 
@@ -168,11 +198,36 @@ class PrintScreenModule extends Model {
 
         if ($res = $conn->query("$query")) {
             while ($row = $res->fetch_assoc()) {
-                array_push($screenList, new Screen($row['id'],$row['name'],$row['width'],$row['height'],$row['color'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']));
+                array_push($screenList, new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']));
             }
             $res->free();
             return $screenList;
         }
+    }
+
+    public function checkUserIdScreen($idUser,$idScreen) {
+        $conn = DatabaseConnSingleton::getConn();
+
+        $query = "SELECT screens.id FROM screens JOIN userscreens ON screens.id = userscreens.idScreen WHERE userscreens.idUser = ".$idUser;
+
+        if ($res = $conn->query("$query")) {
+            $found = false;
+            while ($row = $res->fetch_assoc()) {
+                $found = $row['id'] == $idScreen;
+                if ($found)
+                    break;
+            }
+            $res->free();
+            return $found;
+        }
+    }
+
+    public function updateScreenOptions($screen) {
+        $conn = DatabaseConnSingleton::getConn();
+
+        $query = "UPDATE screens SET name = '".$screen->getName()."',MAC = '".$screen->getMac()."',width = '".$screen->getWidth()."',height = '".$screen->getHeight()."',color = '".$screen->getColor()."' WHERE id = '".$screen->getId()."'";
+
+        return $conn->query("$query");
     }
 
     public function setScreenImage($numScreen,$imageBase64,$imageHex,$imageRed,$imageGreen,$imageBlue) {
@@ -183,7 +238,20 @@ class PrintScreenModule extends Model {
         return $conn->query("$query");
     }
 
-    public function getScreenPrintable($numScreen) {
+    public function deleteScreen($numScreen) {
+        $conn = DatabaseConnSingleton::getConn();
+        $result = false;
+
+        $query = "DELETE FROM userscreens WHERE idScreen = '".$numScreen."'";
+        $result = $conn->query("$query");
+
+        $query = "DELETE FROM screens WHERE id = '".$numScreen."'";
+        $result = $conn->query("$query");
+
+        return $result;
+    }
+
+    public function getScreenPrintableById($numScreen) {
         $conn = DatabaseConnSingleton::getConn();
 
         $query = "SELECT * FROM screens WHERE id = '".$numScreen."'";
@@ -191,10 +259,39 @@ class PrintScreenModule extends Model {
         if ($res = $conn->query("$query")) {
             $row = $res->fetch_assoc(); 
             $res->free();
-            return new Screen($row['id'],$row['name'],$row['width'],$row['height'],$row['color'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']);
+            if ($row != null)
+                return new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']);
         }
         else
             return null;
+    }
+
+    public function getScreenPrintableByMac($macScreen) {
+        $conn = DatabaseConnSingleton::getConn();
+
+        $query = "SELECT * FROM screens WHERE MAC = '".$macScreen."'";
+
+        if ($res = $conn->query("$query")) {
+            $row = $res->fetch_assoc(); 
+            $res->free();
+            if ($row != null)
+                return new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']);
+        }
+        else
+            return null;
+    }
+
+    public function setScreenToUserByMac($mac,$idUser) {
+        $conn = DatabaseConnSingleton::getConn();
+
+        $screen = $this->getScreenPrintableByMac($mac);
+        if($screen != null) {
+            $query = "INSERT INTO userscreens (idUser, idScreen) VALUES ('".$idUser."', '".$screen->getId()."')";
+            $conn->query("$query");
+            return true;
+        }
+
+        return false;
     }
 }
 
