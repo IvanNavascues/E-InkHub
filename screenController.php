@@ -28,6 +28,7 @@
     }
     else if (isset($_GET['macScreen'])) {
         $screen = $printScreenModule->getScreenPrintableByMac($_GET['macScreen']);
+        $printScreenModule->setLastUpdateDateByMac($_GET['macScreen']);
     }
     else {
         $aResult['error'] = "ERROR: Pantalla no seleccionada";
@@ -41,6 +42,7 @@
         $aResult['width'] = $screen->getWidth();
         $aResult['height'] = $screen->getHeight();
         $aResult['color'] = $screen->getColor();
+        $aResult['lastUpdate'] = $screen->getLastUpdate();
         $aResult['imageBase64'] = $screen->getImageBase64();
         $aResult['imageHex'] = $screen->getImageHex();
         $aResult['imageRed'] = $screen->getImageRed();

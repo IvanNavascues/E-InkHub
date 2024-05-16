@@ -22,10 +22,10 @@
 GxIO_Class io(SPI, SS, 22, 21); 
 GxEPD_Class display(io, 16, 4); 
 
-const char* WIFI_SSID = "";
-const char* WIFI_PASSWORD = "";
+const char* WIFI_SSID = "HUAWEI Ivan";
+const char* WIFI_PASSWORD = "N153t30curr4.";
 
-String HOST_NAME = "http://192.168.0.16"; // change to your PC's IP address
+String HOST_NAME = "http://192.168.43.117"; // change to your PC's IP address
 String PATH_NAME   = "/InkScreen/screenController.php";
 String queryString = "?macScreen=";
 

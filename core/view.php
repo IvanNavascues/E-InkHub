@@ -70,7 +70,7 @@ class NewScreenView extends View {
 
     public function __construct($screen) {
         if ($screen == null) {
-            $this->screen = new Screen("","","","","","","bw",null,null,null,null);
+            $this->screen = new Screen("","","","","","","bw",null,null,null,null,null);
             $this->modification = false;
         }
         else {

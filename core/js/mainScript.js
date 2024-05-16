@@ -46,7 +46,7 @@ function screenSelected(){
 						screenHeight = res.height;
 						screenColor = res.color;
 						savedCanvas = null;
-						setupCanvas(res.imageBase64);
+						setupCanvas(res.imageBase64,res.lastUpdate);
 						canvasPrinted = true;
 					}
 				}
@@ -62,6 +62,8 @@ function clearPage() {
 	modifyLi.innerHTML = '';
 	var deleteLi = document.getElementById("deleteLi");
 	deleteLi.innerHTML = '';
+	var lastUpdateLi = document.getElementById("lastUpdateLi");
+	lastUpdateLi.innerHTML = '';
 }
 
 ///CANVAS HANDLER///
@@ -69,7 +71,7 @@ function clearPage() {
 function setup() {
 }
 
-function setupCanvas(canvasImage) {
+function setupCanvas(canvasImage,lastUpdateDate) {
 	noStroke();
   
 	//CREATE ELEMENTS:
@@ -80,6 +82,8 @@ function setupCanvas(canvasImage) {
 			modifyLi.innerHTML = '<a class="nav-link active fs-4 fw-semibold ms-2" aria-current="page" href=newScreenController.php?modify='+currentScreen+'>Modificar pantalla</a>';
 			var deleteLi = document.getElementById("deleteLi");
 			deleteLi.innerHTML = '<a class="nav-link active fs-4 fw-medium ms-2" aria-current="page" href=newScreenController.php?delete='+currentScreen+' onclick="return confirm(\'¡ATENCIÓN! Se eliminará la pantalla del sistema, ¿Quiere continuar?\');">Eliminar pantalla</a>';
+			var lastUpdateLi = document.getElementById("lastUpdateLi");
+			lastUpdateLi.innerHTML = '<text class="text-center text-light fw-medium ms-4 p-1">Ultima vez visto: '+lastUpdateDate+'</text>';
 			//create canvas
 			pixelDensity(1); 
 			canvas = createCanvas(screenWidth, screenHeight);

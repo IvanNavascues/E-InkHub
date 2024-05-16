@@ -13,19 +13,21 @@ class Screen {
     private $width;
     private $height;
     private $color;
+    private $lastUpdate;
     private $imageBase64;
     private $imageHex;
     private $imageRed;
     private $imageGreen;
     private $imageBlue;
 
-    public function __construct($id,$mac,$name,$width,$height,$color,$imageBase64,$imageHex,$imageRed,$imageGreen,$imageBlue) {
+    public function __construct($id,$mac,$name,$width,$height,$color,$lastUpdate,$imageBase64,$imageHex,$imageRed,$imageGreen,$imageBlue) {
         $this->id = $id;
         $this->mac = $mac;
         $this->name = $name;
         $this->width = $width;
         $this->height = $height;
         $this->color = $color;
+        $this->lastUpdate = $lastUpdate;
         $this->imageBase64 = $imageBase64;
         $this->imageHex = $imageHex;
         $this->imageRed = $imageRed;
@@ -55,6 +57,10 @@ class Screen {
 
     public function getColor() {
         return $this->color;
+    }
+
+    public function getLastUpdate() {
+        return $this->lastUpdate;
     }
 
     public function getImageBase64() {
@@ -198,7 +204,7 @@ class PrintScreenModule extends Model {
 
         if ($res = $conn->query("$query")) {
             while ($row = $res->fetch_assoc()) {
-                array_push($screenList, new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']));
+                array_push($screenList, new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['lastUpdate'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']));
             }
             $res->free();
             return $screenList;
@@ -238,6 +244,14 @@ class PrintScreenModule extends Model {
         return $conn->query("$query");
     }
 
+    public function setLastUpdateDateByMac($mac) {
+        $conn = DatabaseConnSingleton::getConn();
+
+        $query = "UPDATE screens SET lastUpdate = now() WHERE MAC = '".$mac."'";
+
+        return $conn->query("$query");
+    }
+
     public function deleteScreen($numScreen) {
         $conn = DatabaseConnSingleton::getConn();
         $result = false;
@@ -260,7 +274,7 @@ class PrintScreenModule extends Model {
             $row = $res->fetch_assoc(); 
             $res->free();
             if ($row != null)
-                return new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']);
+                return new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['lastUpdate'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']);
         }
         else
             return null;
@@ -275,7 +289,7 @@ class PrintScreenModule extends Model {
             $row = $res->fetch_assoc(); 
             $res->free();
             if ($row != null)
-                return new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']);
+                return new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['lastUpdate'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']);
         }
         else
             return null;
