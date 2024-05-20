@@ -78,8 +78,11 @@
 	var newScreen = false;
 	var newScreenId = null;
 	var mouseInButton = false;
+	var defaultLocation = [42.799025,-1.635233];
 
-	const myMap = L.map('map').setView(screens.entries().next().value[1], 14);
+	if (screens.size > 0)
+		defaultLocation = screens.entries().next().value[1];
+	const myMap = L.map('map').setView(defaultLocation, 14);
 
 	const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 		maxZoom: 19,
