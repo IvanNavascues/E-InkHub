@@ -8,6 +8,8 @@ var screenTypes = ["bw","r","g","b","rgb"];
 var canvasPrinted = false;
 var typingText = false;
 var drawingShape = false;
+var lastScreen = '';
+var currentScreen;
 var screenWidth;
 var screenHeight;
 var minBrushThick = 1;
@@ -16,21 +18,26 @@ var headText = 0;
 var typedText = "_";
 var savedCanvas = null;
 var shapeSelected = "";
+var toolSelected = brushes[0];
 var screenColor;
 var firstClick = null;
 var lastClick = null;
 
-function screenSelected(){
-	var selectValue = document.getElementById("selScreen").value;
+function screenSelected(id){
+	if (id != null)
+		currentScreen = id;
+	else
+		currentScreen = document.getElementById("selScreen").value;
 	clearPage();
 	canvasPrinted = false;
 	
-	if (selectValue != "") {
-		//if (savedCanvas == null || (savedCanvas != null && confirm("Si?"))) {
+	if (currentScreen != "") {
+		if (lastScreen != '' && confirm("Se perderá todo el progreso, ¿Continuar?") || lastScreen === '') {
+			lastScreen = currentScreen;
 			$.ajax({
 				type: "GET",
 				dataType: "json",
-				url: "screenController.php?numScreen="+selectValue,
+				url: "screenController.php?numScreen="+currentScreen,
 
 				success: function (res) {
 					if (res.status == -1) {
@@ -42,18 +49,26 @@ function screenSelected(){
 						screenHeight = res.height;
 						screenColor = res.color;
 						savedCanvas = null;
-						setupCanvas(res.imageBase64);
+						setupCanvas(res.imageBase64,res.lastUpdate);
 						canvasPrinted = true;
 					}
 				}
 			});
-		//}
+		}
 	}
 }
 
 function clearPage() {
-  var inputOption = document.getElementById("inputOption");
-  inputOption.innerHTML = '';
+	var inputOption = document.getElementById("inputOption");
+	inputOption.innerHTML = '';
+	var modifyLi = document.getElementById("modifyLi");
+	modifyLi.innerHTML = '';
+	var deleteLi = document.getElementById("deleteLi");
+	deleteLi.innerHTML = '';
+	var lastUpdateLi = document.getElementById("lastUpdateLi");
+	lastUpdateLi.innerHTML = '';
+	var mapArea = document.getElementById("mapArea");
+	mapArea.innerHTML = '';
 }
 
 ///CANVAS HANDLER///
@@ -61,12 +76,19 @@ function clearPage() {
 function setup() {
 }
 
-function setupCanvas(canvasImage) {
+function setupCanvas(canvasImage,lastUpdateDate) {
 	noStroke();
   
 	//CREATE ELEMENTS:
 	$(function(){
 		$("#inputOption").load("core/html/canvas.html",function(){
+			//create mod and del options
+			var modifyLi = document.getElementById("modifyLi");
+			modifyLi.innerHTML = '<a class="nav-link active fs-4 fw-semibold ms-2" aria-current="page" href=newScreenController.php?modify='+currentScreen+'>Modificar pantalla</a>';
+			var deleteLi = document.getElementById("deleteLi");
+			deleteLi.innerHTML = '<a class="nav-link active fs-4 fw-medium ms-2" aria-current="page" href=newScreenController.php?delete='+currentScreen+' onclick="return confirm(\'¡ATENCIÓN! Se eliminará la pantalla del sistema, ¿Quiere continuar?\');">Eliminar pantalla</a>';
+			var lastUpdateLi = document.getElementById("lastUpdateLi");
+			lastUpdateLi.innerHTML = '<text class="text-center text-light fw-medium ms-4 p-1">Ultima vez visto: '+lastUpdateDate+'</text>';
 			//create canvas
 			pixelDensity(1); 
 			canvas = createCanvas(screenWidth, screenHeight);
@@ -100,14 +122,14 @@ function setupCanvas(canvasImage) {
 }
   
 function draw() {
-	var sel = select("#brushSel");
+	//var sel = select("#brushSel");
 	var colorPicker = select("#colorPicker");
 	var slider = select("#thickSlider");
 	if (canvasPrinted) {
 		noStroke();
 
 		if (mouseIsPressed && mouseInCanvas() && !typingText && focused && !drawingShape) {
-			if (sel.value() == brushes[0]) {
+			if (toolSelected == brushes[0]) {
 				//normal paint brush
 		
 				//draw a line with the correct color
@@ -115,7 +137,7 @@ function draw() {
 				strokeWeight(slider.value());
 				line(pmouseX, pmouseY, mouseX, mouseY);
 			}
-			if (sel.value() == brushes[1]) {
+			if (toolSelected == brushes[1]) {
 				//splatter brush
 		
 				//draw ellipses with the correct thickness at random locations a random amount of times
@@ -129,7 +151,7 @@ function draw() {
 				ellipse(mouseX + random(-width/slider.value(), width/slider.value()), mouseY + random(-height/slider.value(), height/slider.value()), slider.value()/5, slider.value()/5);
 				}
 			}
-			if (sel.value() == brushes[2]) {
+			if (toolSelected == brushes[2]) {
 				//eraser
 		
 				//draw a line in background color
@@ -172,9 +194,9 @@ function draw() {
 }
 
 function mousePressed() {
-	var sel = select("#brushSel");
+	//var sel = select("#brushSel");
 	if (canvasPrinted && focused && mouseButton === LEFT) {
-		if (sel.value() == brushes[3] && !typingText && mouseInCanvas()) {
+		if (toolSelected == brushes[3] && !typingText && mouseInCanvas()) {
 			startTyping();
 		}
 		else if (typingText) {
@@ -252,6 +274,7 @@ function stopShape() {
 
 function changeShape(shape) {
 	if (shape != "") {
+		changeTool('');
 		savedCanvas = get(0, 0, width, height);
 		drawingShape = true;
 	}
@@ -259,6 +282,16 @@ function changeShape(shape) {
 		drawingShape = false;
 	}
 	shapeSelected = shape;
+}
+
+function changeTool(tool) {
+	if (tool !== "") {
+		changeShape('');
+		toolSelected = brushes[tool];
+	}
+	else {
+		toolSelected = '';
+	}
 }
 
 function handleFile(file){
@@ -302,7 +335,6 @@ function clearBG() {
 }
   
 function saveImage() {
-	var screenNumber = document.getElementById("selScreen").value;
 	//var canvas = document.getElementById("defaultCanvas0");
 	savedCanvas = get(0, 0, width, height);
 	var img = get(0, 0, width, height);
@@ -356,7 +388,7 @@ function saveImage() {
 			var canvasDataURLBlue = imgBlue.canvas.toDataURL();
 			$.post("submitController.php", 
 				{
-					numScreen: screenNumber, 
+					numScreen: currentScreen, 
 					imageBase64: canvasDataURL,
 					imageHex: hexArray,
 					imageRed: canvasDataURLRed,
@@ -409,22 +441,22 @@ function saveImage() {
 //check for key press
 function keyPressed() {
 	var slider = select("#thickSlider");
-	var sel = select("#brushSel");
+	//var sel = select("#brushSel");
 	if (canvasPrinted && focused) {
 		if(!typingText) {
 			//check for the correct key
 			if (key == 'p' || key == 'P') {
 			//change brush type to normal brush
-			sel.selected(brushes[0]);
+			toolSelected = brushes[0];
 			} else if (key == 'a' || key == 'A') {
 			//change bbrush type to splatter brush
-			sel.selected(brushes[1]);
+			toolSelected = brushes[1];
 			} else if (key == 'b' || key == 'B') {
 			//change brush type to eraser
-			sel.selected(brushes[2]);
+			toolSelected = brushes[2];
 			} else if (key == 't'|| key == 'T'){
 			//switch brush type to text
-			sel.selected(brushes[3]);
+			toolSelected = brushes[3];
 			}else if (key == '+') {
 			//increase brush thickness
 			slider.value(slider.value() + 1);

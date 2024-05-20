@@ -7,6 +7,50 @@
   background-color: rgb(211, 229, 226);
 }
 
+#titleMap { 
+  width: 100%;
+  height: auto;
+}
+
+#mapDiv{
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: auto;
+  grid-template-rows: auto;
+  grid-template-areas: 
+    "map map sel";
+}
+
+#map { 
+  grid-area: map;
+  height: 600px; 
+  width: auto;
+  margin: 20px;
+}
+
+#addScreenButton{
+  display: flex;
+  align-items: center;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  background-color: green;
+  border-radius: 50%;
+  border-color: gray;
+  border-style: solid;
+  border-width: 1px 1px 1px 1px;
+  text-align: center;
+  z-index: 500;
+}
+
+#selectScreen { 
+  grid-area: sel;
+  width: auto;
+}
+
 #canvasDiv {
   grid-area: can;
   display: flex;
@@ -20,11 +64,6 @@
 #buttonsDiv {
   grid-area: buttons;
   background-color: rgb(211, 229, 226);
-}
-
-#selScreen {
-  text-align: center;
-  font-size: x-large;
 }
 
 #inputOption {

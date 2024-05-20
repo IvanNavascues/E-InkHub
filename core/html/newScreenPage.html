@@ -1,0 +1,41 @@
+<nav class="py-3 navbar navbar-dark bg-dark border-bottom">
+    <div class="container d-flex flex-wrap">
+		<ul class="nav me-auto">
+			<li class="nav-item">
+				<a class="nav-link" href="index.php" onclick="return confirm('Se borrará el progreso, ¿Quiere salir?');">Cancelar</a>
+			</li>
+		</ul>
+		<ul class="nav">
+			<li class="nav-item"><a href="index.php?logout" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Cerrar Sesion</a></li>
+		</ul>
+    </div>
+</nav>
+
+<div class="py-5 container d-flex justify-content-center">
+    <form class="col-11 border border-dark p-4" action="newScreenController.php##opt##" method="post" id="loginForm">
+        <div class="mb-4 fs-2 fw-bolder">##header##</div>
+        <div class="mb-3">
+            <label for="inputNewScreenName" class="form-label fs-4 fw-bold">Nombre</label>
+            <input type="text" value="##name##" class="form-control border border-dark" id="inputNewScreenName" name="name" required>
+        </div>
+        <div class="mb-3">
+            <label for="inputNewScreenMAC" class="form-label fs-4 fw-bold">MAC</label>
+            <input type="text" value="##mac##" class="form-control border border-dark" id="inputNewScreenMAC" name="MAC" required>
+        </div>
+        <div class="mb-3">
+            <label for="inputNewScreenHeight" class="form-label fs-4 fw-bold">Altura(px)</label>
+            <input type="number" value="##height##" class="form-control border border-dark" id="inputNewScreenHeight" name="height" required>
+        </div>
+        <div class="mb-3">
+            <label for="inputNewScreenWidth" class="form-label fs-4 fw-bold">Anchura(px)</label>
+            <input type="number" value="##width##" class="form-control border border-dark" id="inputNewScreenWidth" name="width" required>
+        </div>
+        <div class="mb-3">
+            <label for="inputNewScreenColor" class="form-label fs-4 fw-bold me-3">Color disponible: </label>
+            <select class="form-select border border-dark" id="inputNewScreenColor" name="color">
+                ##colors##
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">##button##</button>
+      </form>
+</div>

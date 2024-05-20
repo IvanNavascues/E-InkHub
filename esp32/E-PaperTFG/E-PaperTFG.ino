@@ -27,37 +27,29 @@ const char* WIFI_PASSWORD = "";
 
 String HOST_NAME = ""; // change to your PC's IP address
 String PATH_NAME   = "/InkScreen/screenController.php";
-String queryString = "?numScreen=1";
+String queryString = "?macScreen=";
 
 void setup()
 {
   Serial.begin(115200);
   String textPrinted = "";
   int printStatus = NULL;
-  //Init display
-  Serial.println();
-  Serial.println("setup");
-
-  display.init(115200); // enable diagnostic output on Serial
-
-  Serial.println("setup done");
-
-  display.fillScreen(GxEPD_WHITE);
 
   //Init WiFi connection
-  Serial.print("Conectando a WiFi...");
+  Serial.print("Connecting to WiFi...");
   WiFi.begin(WIFI_SSID,WIFI_PASSWORD);
   while(WiFi.status() != WL_CONNECTED) {
     delay(1000);
     Serial.print(".");
   }
+  delay(1000);
   Serial.println();
-  Serial.println("Conectado con ip: "+WiFi.localIP());
-
+  Serial.println("Connected with mac: "+WiFi.macAddress());
+  
   HTTPClient http;
 
   http.useHTTP10(true);
-  http.begin(HOST_NAME + PATH_NAME + queryString); //HTTP
+  http.begin(HOST_NAME + PATH_NAME + queryString + WiFi.macAddress()); //HTTP
   int httpCode = http.GET();
 
   // httpCode will be negative on error
@@ -87,21 +79,24 @@ void setup()
   }
 
   http.end();
+
+  WiFi.disconnect();
   
   //Init display
   Serial.println();
-  Serial.println("setup");
+  Serial.println("Setup screen...");
 
   display.init(115200); // enable diagnostic output on Serial
 
-  Serial.println("setup done");
+  Serial.println("Setup done");
 
   display.fillScreen(GxEPD_WHITE);
 
   textPrinted.trim();
 
   
-  if (printStatus == 0) {
+  if (httpCode > 0 && printStatus == 0) {
+    Serial.println("Printing image...");
     const char *newText = textPrinted.c_str();
     uint8_t imageHex[4096];
     int j = 0;
@@ -114,6 +109,8 @@ void setup()
         j++;
     }
     showImage(imageHex);
+
+    Serial.println("Image printed");
   }
   
   display.powerDown();
