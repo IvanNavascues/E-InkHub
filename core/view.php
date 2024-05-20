@@ -32,6 +32,7 @@ class MainView extends View {
                                         </div>
                                     </div>
                                 </a>';
+    private $noScreens = '<p class="text-center fs-3 fw-bold">Sin pantallas disponibles</p>';
 
     public function __construct($screenList) {
         $this->screenList = $screenList;
@@ -80,7 +81,9 @@ class MainView extends View {
             $content .= $newScreen;
             //$content .= '<button type="button" class="list-group-item list-group-item-action" onclick="viewScreen('.$screen->getId().')">'.$screen->getName().'</button>';
         }
-
+        if ($content == "")
+            $content = $this->noScreens;
+        
         return $content;
     }
 

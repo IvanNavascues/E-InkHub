@@ -119,6 +119,7 @@ class User {
 class PrintScreenModule extends Model {
 
     /* SQL SERVER */
+    /*
     public function createScreenForUser($screen,$idUser) {
         $conn = DatabaseConnSingleton::getConn();
         $result = -1;
@@ -396,10 +397,10 @@ class PrintScreenModule extends Model {
         }
 
         return false;
-    }
+    }*/
 
     /*MySQL*/
-    /*
+    
 
     public function createScreenForUser($screen,$idUser) {
         $conn = DatabaseConnSingleton::getConn();
@@ -544,12 +545,13 @@ class PrintScreenModule extends Model {
 
         return false;
     }
-    */
+    
 }
 
 class LoginScreenModule extends Model {
 
     /* SQL SERVER */
+    /*
     public function checkLogin($username,$password) {
         try
         {
@@ -572,10 +574,10 @@ class LoginScreenModule extends Model {
         catch(Exception $e){
             //echo("Error!");
         }
-    }
+    }*/
 
     /*MySQL*/
-    /*
+    
     public function checkLogin($username,$password) {
         $conn = DatabaseConnSingleton::getConn();
 
@@ -590,7 +592,7 @@ class LoginScreenModule extends Model {
         }
         
         return null;
-    }*/
+    }
 }
 
 ?>

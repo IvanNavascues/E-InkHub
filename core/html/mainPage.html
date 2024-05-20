@@ -78,8 +78,11 @@
 	var newScreen = false;
 	var newScreenId = null;
 	var mouseInButton = false;
+	var defaultLocation = [42.799025,-1.635233];
 
-	const myMap = L.map('map').setView(screens.entries().next().value[1], 14);
+	if (screens.size > 0)
+		defaultLocation = screens.entries().next().value[1];
+	const myMap = L.map('map').setView(defaultLocation, 14);
 
 	const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 		maxZoom: 19,
@@ -88,11 +91,13 @@
 
 	myMap.on('click',onMapClick);
 
-	for (let [key, value] of screens) {
-		let marker = L.marker(value).addTo(myMap);
-		marker.bindPopup(screensName.get(key));
-		markerScreens.set(key,marker);
-		//console.log(`${key}: ${value}`);
+	if (screens.size > 0) {
+		for (let [key, value] of screens) {
+			let marker = L.marker(value).addTo(myMap);
+			marker.bindPopup(screensName.get(key));
+			markerScreens.set(key,marker);
+			//console.log(`${key}: ${value}`);
+		}
 	}
 
 	//myMap.panTo(new L.LatLng(screens[0][0],screen[0][1]));
