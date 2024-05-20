@@ -9,9 +9,21 @@
         if (isset($_GET['modify'])) {
             if ($printScreenModule->checkUserIdScreen($_SESSION['user'],$_GET['modify'])) {
                 if (isset($_POST['name']) && isset($_POST['MAC']) && isset($_POST['height']) && isset($_POST['width']) && isset($_POST['color'])) { 
-                    $screen = new Screen($_GET['modify'],$_POST['MAC'],$_POST['name'],$_POST['width'],$_POST['height'],$_POST['color'],null,null,null,null,null,null);
+                    $screen = new Screen($_GET['modify'],$_POST['MAC'],$_POST['name'],$_POST['width'],$_POST['height'],$_POST['color'],null,null,null,null,null,null,null,null);
                     $vista = new View();
                     if ($printScreenModule->updateScreenOptions($screen)) {
+                        $vista->showAlert("Pantalla modificada con exito");
+                        header("Refresh: 0; URL=index.php");
+                    }
+                    else {
+                        $vista->showAlert("Error al modificar pantalla");
+                        header("Refresh: 0;");
+                    }
+                }
+                else if (isset($_POST['latitude']) && isset($_POST['longitude'])) { 
+                    $screen = new Screen($_GET['modify'],null,null,null,null,null,$_POST['latitude'],$_POST['longitude'],null,null,null,null,null,null);
+                    $vista = new View();
+                    if ($printScreenModule->updateScreenCoords($screen)) {
                         $vista->showAlert("Pantalla modificada con exito");
                         header("Refresh: 0; URL=index.php");
                     }
@@ -60,7 +72,7 @@
         }
         else {
             if (isset($_POST['name']) && isset($_POST['MAC']) && isset($_POST['height']) && isset($_POST['width']) && isset($_POST['color'])) { 
-                $screen = new Screen(0,$_POST['MAC'],$_POST['name'],$_POST['width'],$_POST['height'],$_POST['color'],null,null,null,null,null,null);
+                $screen = new Screen(0,$_POST['MAC'],$_POST['name'],$_POST['width'],$_POST['height'],$_POST['color'],null,null,null,null,null,null,null,null);
                 $vista = new View();
                 $res = $printScreenModule->createScreenForUser($screen,$_SESSION['user']);
                 if ($res === 0) {

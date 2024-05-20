@@ -7,14 +7,14 @@
 
       <div class="collapse navbar-collapse" >
         <ul class="navbar-nav me-auto">
-			<li class="nav-item">
+			<!--<li class="nav-item">
 				<div id="divSelScreen" class="input-group container">
-					<select id="selScreen" name="selScreen" class="form-select fs-4 fw-semibold" onchange="screenSelected()">
+					<select id="selScreen" name="selScreen" class="form-select fs-4 fw-semibold" onchange="screenSelected(null)">
 						<option value="" selected disabled hidden>Elige pantalla</option>
 						##screens##
 					</select>
 				</div>
-			</li>
+			</li>-->
 			<li class="nav-item">
 				<div class="dropdown">
 					<button class="btn btn-dark dropdown-toggle fs-4 fw-semibold" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -26,7 +26,12 @@
 						<script>
 							function addScreenByMac() {
 								var opt = document.getElementById("addByMacOpt");
-								opt.setAttribute("href","newScreenController.php?mac="+prompt('Inserta MAC del dispositivo'));
+								var result = prompt('Inserta MAC del dispositivo');
+								if (result != null) {
+									opt.setAttribute("href","newScreenController.php?mac="+result);
+									return true;
+								}
+								return false;
 							}
 						</script>
 					</ul>
@@ -42,7 +47,100 @@
         <a href="index.php?logout" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Cerrar Sesion</a>
       </div>
     </div>
-  </nav>
+</nav>
+
+<div id="mapArea">
+	<div id="titleMap" class="mt-3">
+		<p class="text-center fs-1 fw-bold">Pantallas disponibles</p>
+		<p class="text-center fs-3 fw-semibold">Selecciona una para modificarla</p>
+	</div>
+	<div id="mapDiv">
+		<div id="map" class="m-3 border border-black">
+			<!--<button type="button" id="addScreenButton" onmouseover="mouseOver()" onmouseout='mouseOut()' onclick="addScreen()"><img src="core/assets/plusSymbol.svg" width="35px" height="35px" alt="add screen button" border="0" /></button>-->
+		</div>
+		<div id="selectScreen" class="m-3">
+			<div class="list-group border border-dark">
+				##screenList##
+			</div>
+		</div>
+	</div>
+</div>
 
 <div id="inputOption">
+	<main></main>
 </div>
+
+<script>
+	const screens = new Map();
+	const screensName = new Map();
+	##coords##
+	var markerScreens = new Map();
+	var newScreen = false;
+	var newScreenId = null;
+	var mouseInButton = false;
+
+	const myMap = L.map('map').setView(screens.entries().next().value[1], 14);
+
+	const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		maxZoom: 19,
+		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+	}).addTo(myMap);
+
+	myMap.on('click',onMapClick);
+
+	for (let [key, value] of screens) {
+		let marker = L.marker(value).addTo(myMap);
+		marker.bindPopup(screensName.get(key));
+		markerScreens.set(key,marker);
+		//console.log(`${key}: ${value}`);
+	}
+
+	//myMap.panTo(new L.LatLng(screens[0][0],screen[0][1]));
+
+	function viewScreen(id) {
+		if (screens.get(id) != null) {
+			myMap.setView(screens.get(id),17);
+			markerScreens.get(id).openPopup();	
+		}
+		/*else 
+			alert("Ubicación no definida, selecciona un punto en el mapa");*/
+
+		return false;
+	}
+
+	function addScreen(id) {
+		newScreen = true;
+		newScreenId = id;
+		alert("Selecciona la nueva ubicación en el mapa");
+	}
+/*
+	function mouseOver() {
+		mouseInButton = true;
+	}
+
+	function mouseOut() {
+		mouseInButton = false;
+	}*/
+
+	function onMapClick(e) {
+		console.log("click");
+		if (newScreen && !mouseInButton) {
+			var marker  = L.marker(e.latlng).addTo(myMap);
+			var latLng = marker.getLatLng();
+			console.log("añadido "+latLng);
+			newScreen = false;
+			
+			$.post("newScreenController.php?modify="+newScreenId, 
+			{
+				latitude: latLng.lat, 
+				longitude: latLng.lng
+			},
+			function(res) {
+				alert("Ubicación guardada");
+				location.reload();
+			},
+			"");
+		}
+	}	
+
+</script>

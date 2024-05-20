@@ -13,6 +13,8 @@ class Screen {
     private $width;
     private $height;
     private $color;
+    private $latitude;
+    private $longitude;
     private $lastUpdate;
     private $imageBase64;
     private $imageHex;
@@ -20,13 +22,15 @@ class Screen {
     private $imageGreen;
     private $imageBlue;
 
-    public function __construct($id,$mac,$name,$width,$height,$color,$lastUpdate,$imageBase64,$imageHex,$imageRed,$imageGreen,$imageBlue) {
+    public function __construct($id,$mac,$name,$width,$height,$color,$latitude,$longitude,$lastUpdate,$imageBase64,$imageHex,$imageRed,$imageGreen,$imageBlue) {
         $this->id = $id;
         $this->mac = $mac;
         $this->name = $name;
         $this->width = $width;
         $this->height = $height;
         $this->color = $color;
+        $this->latitude = $latitude;
+        $this->longitude = $longitude;
         $this->lastUpdate = $lastUpdate;
         $this->imageBase64 = $imageBase64;
         $this->imageHex = $imageHex;
@@ -57,6 +61,14 @@ class Screen {
 
     public function getColor() {
         return $this->color;
+    }
+
+    public function getLatitude() {
+        return $this->latitude;
+    }
+
+    public function getLongitude() {
+        return $this->longitude;
     }
 
     public function getLastUpdate() {
@@ -107,6 +119,30 @@ class User {
 class PrintScreenModule extends Model {
 
     /* SQL SERVER
+    public function createScreenForUser($screen,$idUser) {
+        $conn = DatabaseConnSingleton::getConn();
+        $result = -1;
+
+        $existingScreen = $this->getScreenPrintableByMac($screen->getMac());
+        if ($existingScreen != null) {
+            $result = 1;
+            $idNewScreen = $existingScreen->getId();
+        }
+        else {
+            $query = "INSERT INTO screens (MAC, name, width, height, color) 
+                        VALUES ('".$screen->getMac()."', '".$screen->getName()."', '".$screen->getWidth()."','".$screen->getHeight()."','".$screen->getColor()."')";
+            if ($conn->query("$query")) {
+                $result = 0;
+                $idNewScreen = $this->getScreenPrintableByMac($screen->getMac())->getId();
+            }
+        }
+
+        $query = "INSERT INTO userscreens (idUser, idScreen) VALUES ('".$idUser."', '".$idNewScreen."')";
+        $conn->query("$query");
+
+        return $result;
+    }
+    
     public function getScreens($idUser) {
         $conn = DatabaseConnSingleton::getConn();
 
@@ -204,7 +240,7 @@ class PrintScreenModule extends Model {
 
         if ($res = $conn->query("$query")) {
             while ($row = $res->fetch_assoc()) {
-                array_push($screenList, new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['lastUpdate'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']));
+                array_push($screenList, new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['latitude'],$row['longitude'],$row['lastUpdate'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']));
             }
             $res->free();
             return $screenList;
@@ -232,6 +268,14 @@ class PrintScreenModule extends Model {
         $conn = DatabaseConnSingleton::getConn();
 
         $query = "UPDATE screens SET name = '".$screen->getName()."',MAC = '".$screen->getMac()."',width = '".$screen->getWidth()."',height = '".$screen->getHeight()."',color = '".$screen->getColor()."' WHERE id = '".$screen->getId()."'";
+
+        return $conn->query("$query");
+    }
+
+    public function updateScreenCoords($screen) {
+        $conn = DatabaseConnSingleton::getConn();
+
+        $query = "UPDATE screens SET latitude = '".$screen->getLatitude()."',longitude = '".$screen->getLongitude()."' WHERE id = '".$screen->getId()."'";
 
         return $conn->query("$query");
     }
@@ -274,7 +318,7 @@ class PrintScreenModule extends Model {
             $row = $res->fetch_assoc(); 
             $res->free();
             if ($row != null)
-                return new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['lastUpdate'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']);
+                return new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['latitude'],$row['longitude'],$row['lastUpdate'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']);
         }
         else
             return null;
@@ -289,7 +333,7 @@ class PrintScreenModule extends Model {
             $row = $res->fetch_assoc(); 
             $res->free();
             if ($row != null)
-                return new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['lastUpdate'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']);
+                return new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['latitude'],$row['longitude'],$row['lastUpdate'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']);
         }
         else
             return null;

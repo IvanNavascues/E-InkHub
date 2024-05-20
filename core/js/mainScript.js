@@ -23,8 +23,11 @@ var screenColor;
 var firstClick = null;
 var lastClick = null;
 
-function screenSelected(){
-	currentScreen = document.getElementById("selScreen").value;
+function screenSelected(id){
+	if (id != null)
+		currentScreen = id;
+	else
+		currentScreen = document.getElementById("selScreen").value;
 	clearPage();
 	canvasPrinted = false;
 	
@@ -64,6 +67,8 @@ function clearPage() {
 	deleteLi.innerHTML = '';
 	var lastUpdateLi = document.getElementById("lastUpdateLi");
 	lastUpdateLi.innerHTML = '';
+	var mapArea = document.getElementById("mapArea");
+	mapArea.innerHTML = '';
 }
 
 ///CANVAS HANDLER///
@@ -330,7 +335,6 @@ function clearBG() {
 }
   
 function saveImage() {
-	var screenNumber = document.getElementById("selScreen").value;
 	//var canvas = document.getElementById("defaultCanvas0");
 	savedCanvas = get(0, 0, width, height);
 	var img = get(0, 0, width, height);
@@ -384,7 +388,7 @@ function saveImage() {
 			var canvasDataURLBlue = imgBlue.canvas.toDataURL();
 			$.post("submitController.php", 
 				{
-					numScreen: screenNumber, 
+					numScreen: currentScreen, 
 					imageBase64: canvasDataURL,
 					imageHex: hexArray,
 					imageRed: canvasDataURLRed,
