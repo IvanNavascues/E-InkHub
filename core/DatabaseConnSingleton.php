@@ -1,7 +1,7 @@
 <?php
 
 class DatabaseConnSingleton {
-/* USAR CON SQL
+/* SQL SERVER */
     private static $conn = null;
     
     public static function getConn(){
@@ -30,7 +30,9 @@ class DatabaseConnSingleton {
     {
         sqlsrv_close(self::$conn);
     }
-*/
+
+    /*MySQL*/
+    /*
     private static $dbhost = "localhost";
     private static $dbuser = "root";
     private static $dbpass = "";
@@ -49,6 +51,6 @@ class DatabaseConnSingleton {
     public static function closeConn()
     {
         self::$conn->close();
-    }
+    }*/
 }
 ?>
