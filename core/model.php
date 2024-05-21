@@ -199,7 +199,7 @@ class PrintScreenModule extends Model {
             if ($found)
                 break;
         }
-        sqlsrv_free_stmt($getScreens);
+        sqlsrv_free_stmt($getScreensId);
         sqlsrv_close($conn);
 
         return $found;
