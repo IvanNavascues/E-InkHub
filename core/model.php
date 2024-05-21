@@ -179,7 +179,7 @@ class PrintScreenModule extends Model {
         }
 
         while ($row = sqlsrv_fetch_array($getScreens, SQLSRV_FETCH_ASSOC)) {
-            array_push($screenList, new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['latitude'],$row['longitude'],$row['lastUpdate'],$row['color'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']));
+            array_push($screenList, new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['latitude'],$row['longitude'],$row['lastUpdate'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']));
         }
         sqlsrv_free_stmt($getScreens);
         sqlsrv_close($conn);
@@ -347,7 +347,7 @@ class PrintScreenModule extends Model {
             }
             
             $row = sqlsrv_fetch_array($getScreen, SQLSRV_FETCH_ASSOC);
-            $screen = new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['latitude'],$row['longitude'],$row['lastUpdate'],$row['color'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']);
+            $screen = new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['latitude'],$row['longitude'],$row['lastUpdate'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']);
             sqlsrv_free_stmt($getScreen);
             sqlsrv_close($conn);
 
@@ -371,7 +371,7 @@ class PrintScreenModule extends Model {
             }
             
             $row = sqlsrv_fetch_array($getScreen, SQLSRV_FETCH_ASSOC);
-            $screen = new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['latitude'],$row['longitude'],$row['lastUpdate'],$row['color'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']);
+            $screen = new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['latitude'],$row['longitude'],$row['lastUpdate'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']);
             sqlsrv_free_stmt($getScreen);
             sqlsrv_close($conn);
 
