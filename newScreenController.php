@@ -13,11 +13,11 @@
                     $vista = new View();
                     if ($printScreenModule->updateScreenOptions($screen)) {
                         $vista->showAlert("Pantalla modificada con exito");
-                        header("Refresh: 0; URL=index.php");
+                        header('Location: index.php');
                     }
                     else {
                         $vista->showAlert("Error al modificar pantalla");
-                        header("Refresh: 0;");
+                        header('Location: ');
                     }
                 }
                 else if (isset($_POST['latitude']) && isset($_POST['longitude'])) { 
@@ -25,11 +25,11 @@
                     $vista = new View();
                     if ($printScreenModule->updateScreenCoords($screen)) {
                         $vista->showAlert("Pantalla modificada con exito");
-                        header("Refresh: 0; URL=index.php");
+                        header('Location: index.php');
                     }
                     else {
                         $vista->showAlert("Error al modificar pantalla");
-                        header("Refresh: 0;");
+                        header('Location: ');
                     }
                 }
                 else {
@@ -41,7 +41,7 @@
             else {
                 $vista = new View();
                 $vista->showAlert("Acceso denegado a pantalla");
-                header("Refresh: 0; URL=index.php");
+                header('Location: index.php');
             }
         }
         else if (isset($_GET['delete'])) {
@@ -53,12 +53,11 @@
                 else {
                     $vista->showAlert("Error al eliminar pantalla");
                 }
-                header("Refresh: 0; URL=index.php");
             }
             else {
                 $vista->showAlert("Acceso denegado a pantalla");
-                header("Refresh: 0; URL=index.php");
             }
+            header('Location: index.php');
         }
         else if (isset($_GET['mac'])) {
             $vista = new View();
@@ -68,7 +67,7 @@
             else {
                 $vista->showAlert("No existe una pantalla con ese MAC");
             }
-            header("Refresh: 0; URL=index.php");
+            header('Location: index.php');
         }
         else {
             if (isset($_POST['name']) && isset($_POST['MAC']) && isset($_POST['height']) && isset($_POST['width']) && isset($_POST['color'])) { 
@@ -77,15 +76,15 @@
                 $res = $printScreenModule->createScreenForUser($screen,$_SESSION['user']);
                 if ($res === 0) {
                     $vista->showAlert("Pantalla añadida con exito");
-                    header("Refresh: 1; URL=index.php");
+                    header('Location: index.php');
                 }
                 else if ($res === 1) {
                     $vista->showAlert("Ya exite una pantalla con ese MAC, ha sido añadida a tu usuario");
-                    header("Refresh: 1; URL=index.php");
+                    header('Location: index.php');
                 }
                 else {
                     $vista->showAlert("Error al añadir pantalla");
-                    header("Refresh: 1;");
+                    header('Location: ');
                 }
             }
             else {
