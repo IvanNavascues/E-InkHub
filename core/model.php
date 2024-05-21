@@ -24,8 +24,8 @@ class Screen {
 
     public function __construct($id,$mac,$name,$width,$height,$color,$latitude,$longitude,$lastUpdate,$imageBase64,$imageHex,$imageRed,$imageGreen,$imageBlue) {
         $this->id = $id;
-        $this->mac = $mac;
-        $this->name = $name;
+        $this->mac = strval($mac);
+        $this->name = strval($name);
         $this->width = $width;
         $this->height = $height;
         $this->color = $color;
@@ -129,8 +129,8 @@ class PrintScreenModule extends Model {
             $idNewScreen = $existingScreen->getId();
         }
         else {
-            $query = "INSERT INTO screens (MAC, name, width, height, color) VALUES (?,?,?,?,?)"; 
-            $params1 = array("'".$screen->getMac()."'","'".$screen->getName()."'",intval($screen->getWidth()),intval($screen->getHeight()),$screen->getColor());
+            $query = "INSERT INTO screens (MAC, name, width, height, color) VALUES (?,?,?,?,?)";
+            $params1 = array($screen->getMac(),$screen->getName(),intval($screen->getWidth()),intval($screen->getHeight()),$screen->getColor());
             $stmt = sqlsrv_query( $conn, $query,$params1);
             if($stmt) {
                 sqlsrv_commit($conn);
