@@ -365,7 +365,7 @@ class PrintScreenModule extends Model {
     
             $query = "SELECT * FROM screens WHERE MAC = '".$macScreen."'";
             $getScreen = sqlsrv_query($conn, $query);
-            if ($getScreen === false) {
+            if ($getScreen == false) {
                 return null;
                 //die(FormatErrors(sqlsrv_errors()));
             }
@@ -380,7 +380,7 @@ class PrintScreenModule extends Model {
             }
         }
         catch(Exception $e) {
-            //echo("Error!");
+            echo("Error!");
         }
     }
 
