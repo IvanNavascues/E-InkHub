@@ -124,11 +124,7 @@ class PrintScreenModule extends Model {
         $result = -1;
 
         $existingScreen = $this->getScreenPrintableByMac($screen->getMac());
-        if ($existingScreen != null) {
-            $result = 1;
-            $idNewScreen = $existingScreen->getId();
-        }
-        else {
+        if ($existingScreen === null) {
             $query = "INSERT INTO screens (MAC, name, width, height, color) 
                     VALUES ('".$screen->getMac()."',
                             '".$screen->getName()."',
@@ -147,6 +143,10 @@ class PrintScreenModule extends Model {
             }
             // Free statement and connection resources. 
             sqlsrv_free_stmt( $stmt1);
+        }
+        else {
+            $result = 1;
+            $idNewScreen = $existingScreen->getId();
         }
 
         /*$query = "INSERT INTO userscreens (idUser, idScreen) VALUES (".intval($idUser).",".intval($idNewScreen).")";
@@ -364,6 +364,8 @@ class PrintScreenModule extends Model {
     
             $query = "SELECT * FROM screens WHERE MAC = '".$macScreen."'";
             $getScreen = sqlsrv_query($conn, $query);
+            print($query);
+            print($getScreen);
             if ($getScreen === false) {
                 return null;
                 //die(FormatErrors(sqlsrv_errors()));

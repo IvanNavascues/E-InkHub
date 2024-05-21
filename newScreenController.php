@@ -80,7 +80,7 @@
                 }
                 else if ($res === 1) {
                     $vista->showAlert("Ya exite una pantalla con ese MAC, ha sido añadida a tu usuario");
-                    header('Location: index.php');
+                    header('Location: https://e-inkhub.azurewebsites.net');
                 }
                 else {
                     $vista->showAlert("Error al añadir pantalla");
