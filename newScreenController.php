@@ -71,7 +71,7 @@
         }
         else {
             if (isset($_POST['name']) && isset($_POST['MAC']) && isset($_POST['height']) && isset($_POST['width']) && isset($_POST['color'])) { 
-                $screen = new Screen(0,$_POST['MAC'],$_POST['name'],$_POST['width'],$_POST['height'],$_POST['color'],null,null,null,null,null,null,null,null);
+                $screen = new Screen(0,strval($_POST['MAC']),strval($_POST['name']),$_POST['width'],$_POST['height'],$_POST['color'],null,null,null,null,null,null,null,null);
                 $vista = new View();
                 $res = $printScreenModule->createScreenForUser($screen,$_SESSION['user']);
                 if ($res === 0) {

@@ -135,7 +135,6 @@ class PrintScreenModule extends Model {
                             ".$screen->getWidth().",
                             ".$screen->getHeight().",
                             '".$screen->getColor()."')";
-            print($query);
             //$params1 = array($screen->getMac(),$screen->getName(),intval($screen->getWidth()),intval($screen->getHeight()),$screen->getColor());
             $stmt1 = sqlsrv_query( $conn, $query);
             if($stmt1) {
