@@ -130,8 +130,9 @@ class PrintScreenModule extends Model {
         }
         else {
             $query = "INSERT INTO screens (MAC, name, width, height, color) 
-                        VALUES ('".$screen->getMac()."', '".$screen->getName()."', '".$screen->getWidth()."','".$screen->getHeight()."','".$screen->getColor()."')";
-            $stmt = sqlsrv_query( $conn, $query);
+                        VALUES (?,?,?,?,?)";
+            $params1 = array($screen->getMac(),$screen->getName(),intval($screen->getWidth()),intval($screen->getHeight()),$screen->getColor());
+            $stmt = sqlsrv_query( $conn, $query,$params1);
             if($stmt) {
                 sqlsrv_commit($conn);
                 $result = 0;
@@ -141,11 +142,12 @@ class PrintScreenModule extends Model {
                 sqlsrv_rollback($conn);
             }
             // Free statement and connection resources. 
-            sqlsrv_free_stmt( $stmt);
+            //sqlsrv_free_stmt( $stmt);
         }
 
-        $query = "INSERT INTO userscreens (idUser, idScreen) VALUES ('".$idUser."', '".$idNewScreen."')";
-        $stmt = sqlsrv_query( $conn, $query);
+        $query = "INSERT INTO userscreens (idUser, idScreen) VALUES (?,?)";
+        $params2 = array($idUser,$idNewScreen);
+        $stmt = sqlsrv_query( $conn, $query,$params2);
         if($stmt) {
             sqlsrv_commit($conn);
             $result = 0;
