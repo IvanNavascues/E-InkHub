@@ -135,12 +135,13 @@ class PrintScreenModule extends Model {
                             ".$screen->getWidth().",
                             ".$screen->getHeight().",
                             '".$screen->getColor()."')";
+            print($query);
             //$params1 = array($screen->getMac(),$screen->getName(),intval($screen->getWidth()),intval($screen->getHeight()),$screen->getColor());
             $stmt1 = sqlsrv_query( $conn, $query);
             if($stmt1) {
                 //sqlsrv_commit($conn);
                 $result = 0;
-                $idNewScreen = $this->getScreenPrintableByMac($screen->getMac())->getId();
+                //$idNewScreen = $this->getScreenPrintableByMac($screen->getMac())->getId();
             }
             else{
                 //sqlsrv_rollback($conn);
@@ -149,6 +150,7 @@ class PrintScreenModule extends Model {
             sqlsrv_free_stmt( $stmt1);
         }
 
+        /*
         $query = "INSERT INTO userscreens (idUser, idScreen) VALUES (".intval($idUser).",".intval($idNewScreen).")";
         //$params2 = array(intval($idUser),intval($idNewScreen));
         $stmt2 = sqlsrv_query( $conn, $query);
@@ -160,7 +162,7 @@ class PrintScreenModule extends Model {
             //sqlsrv_rollback($conn);
         }
         // Free statement and connection resources. 
-        sqlsrv_free_stmt( $stmt2);
+        sqlsrv_free_stmt( $stmt2);*/
 
         return $result;
     }
