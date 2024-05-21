@@ -14,10 +14,12 @@
                     if ($printScreenModule->updateScreenOptions($screen)) {
                         $vista->showAlert("Pantalla modificada con exito");
                         header('Location: index.php');
+                        exit();
                     }
                     else {
                         $vista->showAlert("Error al modificar pantalla");
                         header('Location: ');
+                        exit();
                     }
                 }
                 else if (isset($_POST['latitude']) && isset($_POST['longitude'])) { 
@@ -26,10 +28,12 @@
                     if ($printScreenModule->updateScreenCoords($screen)) {
                         $vista->showAlert("Pantalla modificada con exito");
                         header('Location: index.php');
+                        exit();
                     }
                     else {
                         $vista->showAlert("Error al modificar pantalla");
                         header('Location: ');
+                        exit();
                     }
                 }
                 else {
@@ -42,6 +46,7 @@
                 $vista = new View();
                 $vista->showAlert("Acceso denegado a pantalla");
                 header('Location: index.php');
+                exit();
             }
         }
         else if (isset($_GET['delete'])) {
@@ -58,6 +63,7 @@
                 $vista->showAlert("Acceso denegado a pantalla");
             }
             header('Location: index.php');
+            exit();
         }
         else if (isset($_GET['mac'])) {
             $vista = new View();
@@ -68,6 +74,7 @@
                 $vista->showAlert("No existe una pantalla con ese MAC");
             }
             header('Location: index.php');
+            exit();
         }
         else {
             if (isset($_POST['name']) && isset($_POST['MAC']) && isset($_POST['height']) && isset($_POST['width']) && isset($_POST['color'])) { 
@@ -77,14 +84,17 @@
                 if ($res === 0) {
                     $vista->showAlert("Pantalla añadida con exito");
                     header('Location: index.php');
+                    exit();
                 }
                 else if ($res === 1) {
                     $vista->showAlert("Ya exite una pantalla con ese MAC, ha sido añadida a tu usuario");
-                    header('Location: https://e-inkhub.azurewebsites.net');
+                    header('Location: index.php');
+                    exit();
                 }
                 else {
                     $vista->showAlert("Error al añadir pantalla");
                     header('Location: ');
+                    exit();
                 }
             }
             else {

@@ -370,13 +370,14 @@ class PrintScreenModule extends Model {
                 return null;
                 //die(FormatErrors(sqlsrv_errors()));
             }
-            
-            $row = sqlsrv_fetch_array($getScreen, SQLSRV_FETCH_ASSOC);
-            $screen = new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['latitude'],$row['longitude'],$row['lastUpdate'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']);
-            sqlsrv_free_stmt($getScreen);
-            sqlsrv_close($conn);
+            else {
+                $row = sqlsrv_fetch_array($getScreen, SQLSRV_FETCH_ASSOC);
+                $screen = new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['latitude'],$row['longitude'],$row['lastUpdate'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']);
+                sqlsrv_free_stmt($getScreen);
+                sqlsrv_close($conn);
 
-            return $screen;
+                return $screen;
+            }
         }
         catch(Exception $e) {
             //echo("Error!");
