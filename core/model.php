@@ -24,8 +24,8 @@ class Screen {
 
     public function __construct($id,$mac,$name,$width,$height,$color,$latitude,$longitude,$lastUpdate,$imageBase64,$imageHex,$imageRed,$imageGreen,$imageBlue) {
         $this->id = $id;
-        $this->mac = strval($mac);
-        $this->name = strval($name);
+        $this->mac = $mac;
+        $this->name = $name;
         $this->width = $width;
         $this->height = $height;
         $this->color = $color;
@@ -131,8 +131,8 @@ class PrintScreenModule extends Model {
         else {
             $query = "INSERT INTO screens (MAC, name, width, height, color) VALUES (?,?,?,?,?)";
             $params1 = array($screen->getMac(),$screen->getName(),intval($screen->getWidth()),intval($screen->getHeight()),$screen->getColor());
-            $stmt = sqlsrv_query( $conn, $query,$params1);
-            if($stmt) {
+            $stmt1 = sqlsrv_query( $conn, $query,$params1);
+            if($stmt1) {
                 sqlsrv_commit($conn);
                 $result = 0;
                 $idNewScreen = $this->getScreenPrintableByMac($screen->getMac())->getId();
@@ -141,13 +141,13 @@ class PrintScreenModule extends Model {
                 sqlsrv_rollback($conn);
             }
             // Free statement and connection resources. 
-            //sqlsrv_free_stmt( $stmt);
+            sqlsrv_free_stmt( $stmt1);
         }
 
         $query = "INSERT INTO userscreens (idUser, idScreen) VALUES (?,?)";
         $params2 = array(intval($idUser),intval($idNewScreen));
-        $stmt = sqlsrv_query( $conn, $query,$params2);
-        if($stmt) {
+        $stmt2 = sqlsrv_query( $conn, $query,$params2);
+        if($stmt2) {
             sqlsrv_commit($conn);
             $result = 0;
         }
@@ -155,7 +155,7 @@ class PrintScreenModule extends Model {
             sqlsrv_rollback($conn);
         }
         // Free statement and connection resources. 
-        sqlsrv_free_stmt( $stmt);
+        sqlsrv_free_stmt( $stmt2);
 
         return $result;
     }
