@@ -149,7 +149,7 @@ class PrintScreenModule extends Model {
             $idNewScreen = $existingScreen->getId();
         }
 
-        /*$query = "INSERT INTO userscreens (idUser, idScreen) VALUES (".intval($idUser).",".intval($idNewScreen).")";
+        $query = "INSERT INTO userscreens (idUser, idScreen) VALUES ('".intval($idUser)."','".intval($idNewScreen)."')";
         //$params2 = array(intval($idUser),intval($idNewScreen));
         $stmt2 = sqlsrv_query( $conn, $query);
         if($stmt2) {
@@ -160,7 +160,7 @@ class PrintScreenModule extends Model {
             //sqlsrv_rollback($conn);
         }
         // Free statement and connection resources. 
-        sqlsrv_free_stmt( $stmt2);*/
+        sqlsrv_free_stmt( $stmt2);
 
         return $result;
     }
@@ -364,14 +364,13 @@ class PrintScreenModule extends Model {
     
             $query = "SELECT * FROM screens WHERE MAC = '".$macScreen."'";
             $getScreen = sqlsrv_query($conn, $query);
-            print($query);
-            print($getScreen);
             if ($getScreen === false) {
                 return null;
                 //die(FormatErrors(sqlsrv_errors()));
             }
             else {
                 $row = sqlsrv_fetch_array($getScreen, SQLSRV_FETCH_ASSOC);
+                print($row);
                 $screen = new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['latitude'],$row['longitude'],$row['lastUpdate'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']);
                 sqlsrv_free_stmt($getScreen);
                 sqlsrv_close($conn);
