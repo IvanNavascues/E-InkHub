@@ -149,7 +149,7 @@ class PrintScreenModule extends Model {
             sqlsrv_free_stmt( $stmt1);
         }
 
-        $query = "INSERT INTO userscreens (idUser, idScreen) VALUES (".intval($idUser).",".intval($idNewScreen).")";
+        /*$query = "INSERT INTO userscreens (idUser, idScreen) VALUES (".intval($idUser).",".intval($idNewScreen).")";
         //$params2 = array(intval($idUser),intval($idNewScreen));
         $stmt2 = sqlsrv_query( $conn, $query);
         if($stmt2) {
@@ -160,7 +160,7 @@ class PrintScreenModule extends Model {
             //sqlsrv_rollback($conn);
         }
         // Free statement and connection resources. 
-        sqlsrv_free_stmt( $stmt2);
+        sqlsrv_free_stmt( $stmt2);*/
 
         return $result;
     }
