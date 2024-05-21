@@ -16,6 +16,6 @@
         }
     }
     
-    header('Location: index.php');
+    header("Refresh: 0; URL=index.php");
     exit();
 ?>
