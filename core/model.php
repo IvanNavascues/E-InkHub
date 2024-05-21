@@ -130,20 +130,20 @@ class PrintScreenModule extends Model {
         }
         else {
             $query = "INSERT INTO screens (MAC, name, width, height, color) 
-                    VALUES ('CAST(".$screen->getMac()." AS varchar(20))',
-                            'CAST(".$screen->getName()." AS text)',
-                            CAST(".$screen->getWidth()." AS int),
-                            CAST(".$screen->getHeight()." AS int),
-                            'CAST(".$screen->getColor()." AS varchar(5))')";
+                    VALUES ('".$screen->getMac()."',
+                            '".$screen->getName()."',
+                            ".$screen->getWidth().",
+                            ".$screen->getHeight().",
+                            '".$screen->getColor()."')";
             //$params1 = array($screen->getMac(),$screen->getName(),intval($screen->getWidth()),intval($screen->getHeight()),$screen->getColor());
             $stmt1 = sqlsrv_query( $conn, $query);
             if($stmt1) {
-                sqlsrv_commit($conn);
+                //sqlsrv_commit($conn);
                 $result = 0;
                 $idNewScreen = $this->getScreenPrintableByMac($screen->getMac())->getId();
             }
             else{
-                sqlsrv_rollback($conn);
+                //sqlsrv_rollback($conn);
             }
             // Free statement and connection resources. 
             sqlsrv_free_stmt( $stmt1);
@@ -153,11 +153,11 @@ class PrintScreenModule extends Model {
         //$params2 = array(intval($idUser),intval($idNewScreen));
         $stmt2 = sqlsrv_query( $conn, $query);
         if($stmt2) {
-            sqlsrv_commit($conn);
+            //sqlsrv_commit($conn);
             $result = 0;
         }
         else{
-            sqlsrv_rollback($conn);
+            //sqlsrv_rollback($conn);
         }
         // Free statement and connection resources. 
         sqlsrv_free_stmt( $stmt2);
