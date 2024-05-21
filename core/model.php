@@ -156,7 +156,7 @@ class PrintScreenModule extends Model {
         $stmt2 = sqlsrv_query( $conn, $query);
         if($stmt2) {
             //sqlsrv_commit($conn);
-            $result = 0;
+            //$result = 0;
         }
         else{
             //sqlsrv_rollback($conn);
@@ -366,7 +366,7 @@ class PrintScreenModule extends Model {
     
             $query = "SELECT * FROM screens WHERE MAC = '".$macScreen."'";
             $getScreen = sqlsrv_query($conn, $query);
-            if (!$getScreen) {
+            if ($getScreen === false) {
                 return null;
                 //die(FormatErrors(sqlsrv_errors()));
             }
