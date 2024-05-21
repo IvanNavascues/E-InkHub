@@ -362,23 +362,26 @@ class PrintScreenModule extends Model {
         try
         {
             $conn = DatabaseConnSingleton::getConn();
+
+            $screen = null;
     
             $query = "SELECT * FROM screens WHERE MAC = '".$macScreen."'";
             $getScreen = sqlsrv_query($conn, $query);
-            if ($getScreen == false) {
-                return null;
+            if ($getScreen === false || $getScreen === false) {
+                print("fallo 1");
                 //die(FormatErrors(sqlsrv_errors()));
             }
             else {
-                print("hola");
                 $row = sqlsrv_fetch_array($getScreen, SQLSRV_FETCH_ASSOC);
-                print("adios");
-                $screen = new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['latitude'],$row['longitude'],$row['lastUpdate'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']);
-                sqlsrv_free_stmt($getScreen);
-                sqlsrv_close($conn);
-
-                return $screen;
+                if ($row === null || $row === false)
+                    print("fallo 2");
+                else 
+                    $screen = new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['latitude'],$row['longitude'],$row['lastUpdate'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']);
             }
+            sqlsrv_free_stmt($getScreen);
+            sqlsrv_close($conn);
+
+            return $screen;
         }
         catch(Exception $e) {
             echo("Error!");
