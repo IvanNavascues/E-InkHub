@@ -77,15 +77,15 @@
                 $res = $printScreenModule->createScreenForUser($screen,$_SESSION['user']);
                 if ($res === 0) {
                     $vista->showAlert("Pantalla añadida con exito");
-                    header("Refresh: 0; URL=index.php");
+                    header("Refresh: 1; URL=index.php");
                 }
                 else if ($res === 1) {
                     $vista->showAlert("Ya exite una pantalla con ese MAC, ha sido añadida a tu usuario");
-                    header("Refresh: 0; URL=index.php");
+                    header("Refresh: 1; URL=index.php");
                 }
                 else {
                     $vista->showAlert("Error al añadir pantalla");
-                    header("Refresh: 0;");
+                    header("Refresh: 1;");
                 }
             }
             else {

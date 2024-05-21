@@ -366,7 +366,7 @@ class PrintScreenModule extends Model {
     
             $query = "SELECT * FROM screens WHERE MAC = '".$macScreen."'";
             $getScreen = sqlsrv_query($conn, $query);
-            if ($getScreen == FALSE) {
+            if (!$getScreen) {
                 return null;
                 //die(FormatErrors(sqlsrv_errors()));
             }
