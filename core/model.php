@@ -141,7 +141,7 @@ class PrintScreenModule extends Model {
             if($stmt1) {
                 //sqlsrv_commit($conn);
                 $result = 0;
-                //$idNewScreen = $this->getScreenPrintableByMac($screen->getMac())->getId();
+                $idNewScreen = $this->getScreenPrintableByMac($screen->getMac())->getId();
             }
             else{
                 //sqlsrv_rollback($conn);
@@ -150,7 +150,6 @@ class PrintScreenModule extends Model {
             sqlsrv_free_stmt( $stmt1);
         }
 
-        /*
         $query = "INSERT INTO userscreens (idUser, idScreen) VALUES (".intval($idUser).",".intval($idNewScreen).")";
         //$params2 = array(intval($idUser),intval($idNewScreen));
         $stmt2 = sqlsrv_query( $conn, $query);
@@ -162,7 +161,7 @@ class PrintScreenModule extends Model {
             //sqlsrv_rollback($conn);
         }
         // Free statement and connection resources. 
-        sqlsrv_free_stmt( $stmt2);*/
+        sqlsrv_free_stmt( $stmt2);
 
         return $result;
     }
@@ -171,7 +170,7 @@ class PrintScreenModule extends Model {
         $conn = DatabaseConnSingleton::getConn();
 
         $screenList = array();
-        $query = "SELECT screens.* FROM screens JOIN userscreens ON screens.id = userscreens.macScreen WHERE userscreens.idUser = ".$idUser;
+        $query = "SELECT screens.* FROM screens JOIN userscreens ON screens.id = userscreens.idScreen WHERE userscreens.idUser = ".$idUser;
         
         $getScreens = sqlsrv_query($conn, $query);
         if ($getScreens == FALSE) {
@@ -392,7 +391,6 @@ class PrintScreenModule extends Model {
             $stmt = sqlsrv_query( $conn, $query);
             if($stmt) {
                 sqlsrv_commit($conn);
-                $result = 0;
             }
             else{
                 sqlsrv_rollback($conn);
