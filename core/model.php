@@ -129,9 +129,10 @@ class PrintScreenModule extends Model {
             $idNewScreen = $existingScreen->getId();
         }
         else {
-            $query = "INSERT INTO screens (MAC, name, width, height, color) VALUES ('?','?',?,?,?)";
-            $params1 = array(strval($screen->getMac()),strval($screen->getName()),intval($screen->getWidth()),intval($screen->getHeight()),strval($screen->getColor()));
-            $stmt = sqlsrv_query( $conn, $query,$params1);
+            $query = "INSERT INTO screens (MAC, name, width, height, color) 
+                    VALUES ('".$screen->getMac()."','".$screen->getName()."',".intval($screen->getWidth()).",".intval($screen->getHeight()).",'".$screen->getColor()."')";
+            //$params1 = array(strval($screen->getMac()),strval($screen->getName()),,intval($screen->getHeight()),strval($screen->getColor()));
+            $stmt = sqlsrv_query( $conn, $query);
             if($stmt) {
                 sqlsrv_commit($conn);
                 $result = 0;
@@ -144,9 +145,9 @@ class PrintScreenModule extends Model {
             //sqlsrv_free_stmt( $stmt);
         }
 
-        $query = "INSERT INTO userscreens (idUser, idScreen) VALUES (?,?)";
-        $params2 = array(intval($idUser),intval($idNewScreen));
-        $stmt = sqlsrv_query( $conn, $query,$params2);
+        $query = "INSERT INTO userscreens (idUser, idScreen) VALUES (".intval($idUser).",".intval($idNewScreen).")";
+        //$params2 = array(intval($idUser),intval($idNewScreen));
+        $stmt = sqlsrv_query( $conn, $query);
         if($stmt) {
             sqlsrv_commit($conn);
             $result = 0;
