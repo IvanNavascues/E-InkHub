@@ -370,8 +370,9 @@ class PrintScreenModule extends Model {
                 //die(FormatErrors(sqlsrv_errors()));
             }
             else {
+                print("hola");
                 $row = sqlsrv_fetch_array($getScreen, SQLSRV_FETCH_ASSOC);
-                print($row);
+                print("adios");
                 $screen = new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['latitude'],$row['longitude'],$row['lastUpdate'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']);
                 sqlsrv_free_stmt($getScreen);
                 sqlsrv_close($conn);
