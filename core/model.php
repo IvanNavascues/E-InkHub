@@ -129,9 +129,14 @@ class PrintScreenModule extends Model {
             $idNewScreen = $existingScreen->getId();
         }
         else {
-            $query = "INSERT INTO screens (MAC, name, width, height, color) VALUES (CAST(? AS varchar(20)),(CAST(? AS text),?,?,?)";
-            $params1 = array($screen->getMac(),$screen->getName(),intval($screen->getWidth()),intval($screen->getHeight()),$screen->getColor());
-            $stmt1 = sqlsrv_query( $conn, $query,$params1);
+            $query = "INSERT INTO screens (MAC, name, width, height, color) 
+                    VALUES ('CAST(".$screen->getMac()." AS varchar(20))',
+                            'CAST(".$screen->getName()." AS text)',
+                            CAST(".$screen->getWidth()." AS int),
+                            CAST(".$screen->getHeight()." AS int),
+                            'CAST(".$screen->getColor()." AS varchar(5))')";
+            //$params1 = array($screen->getMac(),$screen->getName(),intval($screen->getWidth()),intval($screen->getHeight()),$screen->getColor());
+            $stmt1 = sqlsrv_query( $conn, $query);
             if($stmt1) {
                 sqlsrv_commit($conn);
                 $result = 0;
