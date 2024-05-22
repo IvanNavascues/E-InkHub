@@ -62,7 +62,7 @@
             else {
                 $vista->showAlert("Acceso denegado a pantalla");
             }
-            header('Location: index.php');
+            header('Location: https://e-inkhub.azurewebsites.net');
             exit();
         }
         else if (isset($_GET['mac'])) {
@@ -83,7 +83,7 @@
                 $res = $printScreenModule->createScreenForUser($screen,$_SESSION['user']);
                 if ($res === 0) {
                     $vista->showAlert("Pantalla añadida con exito");
-                    echo '<script>window.location.replace("https://e-inkhub.azurewebsites.net");</script>';
+                    $vista->reloadPage("https://e-inkhub.azurewebsites.net");
                     //header('Location: index.php');
                     exit();
                 }
