@@ -10,29 +10,31 @@
             if ($printScreenModule->checkUserIdScreen($_SESSION['user'],$_GET['modify'])) {
                 if (isset($_POST['name']) && isset($_POST['MAC']) && isset($_POST['height']) && isset($_POST['width']) && isset($_POST['color'])) { 
                     $screen = new Screen($_GET['modify'],$_POST['MAC'],$_POST['name'],$_POST['width'],$_POST['height'],$_POST['color'],null,null,null,null,null,null,null,null);
-                    $vista = new View();
                     if ($printScreenModule->updateScreenOptions($screen)) {
+                        $vista = new View();
                         $vista->showAlert("Pantalla modificada con exito");
-                        header('Location: index.php');
+                        $vista->reloadPage("");
                         exit();
                     }
                     else {
                         $vista->showAlert("Error al modificar pantalla");
-                        header('Location: ');
+                        $vista = new NewScreenView(null);
+                        $vista->printNewScreenPage();
                         exit();
                     }
                 }
                 else if (isset($_POST['latitude']) && isset($_POST['longitude'])) { 
                     $screen = new Screen($_GET['modify'],null,null,null,null,null,$_POST['latitude'],$_POST['longitude'],null,null,null,null,null,null);
-                    $vista = new View();
                     if ($printScreenModule->updateScreenCoords($screen)) {
+                        $vista = new View();
                         $vista->showAlert("Pantalla modificada con exito");
-                        header('Location: index.php');
+                        $vista->reloadPage("");
                         exit();
                     }
                     else {
                         $vista->showAlert("Error al modificar pantalla");
-                        header('Location: ');
+                        $vista = new NewScreenView(null);
+                        $vista->printNewScreenPage();
                         exit();
                     }
                 }
@@ -45,7 +47,7 @@
             else {
                 $vista = new View();
                 $vista->showAlert("Acceso denegado a pantalla");
-                header('Location: index.php');
+                $vista->reloadPage("");
                 exit();
             }
         }
@@ -62,7 +64,7 @@
             else {
                 $vista->showAlert("Acceso denegado a pantalla");
             }
-            header('Location: https://e-inkhub.azurewebsites.net');
+            $vista->reloadPage("");
             exit();
         }
         else if (isset($_GET['mac'])) {
@@ -73,7 +75,7 @@
             else {
                 $vista->showAlert("No existe una pantalla con ese MAC");
             }
-            header('Location: index.php');
+            $vista->reloadPage("");
             exit();
         }
         else {
@@ -84,17 +86,16 @@
                 if ($res === 0) {
                     $vista->showAlert("Pantalla añadida con exito");
                     $vista->reloadPage("");
-                    //header('Location: index.php');
                     exit();
                 }
                 else if ($res === 1) {
                     $vista->showAlert("Ya exite una pantalla con ese MAC, ha sido añadida a tu usuario");
-                    header('Location: index.php');
+                    $vista->reloadPage("");
                     exit();
                 }
                 else {
                     $vista->showAlert("Error al añadir pantalla");
-                    header('Location: ');
+                    $vista->reloadPage("");
                     exit();
                 }
             }
