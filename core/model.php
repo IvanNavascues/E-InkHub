@@ -124,7 +124,6 @@ class PrintScreenModule extends Model {
         $result = -1;
 
         $existingScreen = $this->getScreenPrintableByMac($screen->getMac());
-        print($existingScreen);
         if ($existingScreen === null) {
             $query = "INSERT INTO screens (MAC, name, width, height, color) 
                     VALUES ('".$screen->getMac()."',
@@ -367,7 +366,7 @@ class PrintScreenModule extends Model {
     
             $query = "SELECT * FROM screens WHERE MAC = '".$macScreen."'";
             $getScreen = sqlsrv_query($conn, $query);
-            if ($getScreen !== false && $getScreen !== false) {
+            if ($getScreen !== null && $getScreen !== false) {
                 $row = sqlsrv_fetch_array($getScreen, SQLSRV_FETCH_ASSOC);
                 if ($row !== null && $row !== false)
                     $screen = new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['latitude'],$row['longitude'],$row['lastUpdate'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']);
@@ -379,6 +378,7 @@ class PrintScreenModule extends Model {
         }
         catch(Exception $e) {
             echo("Error!");
+            return null;
         }
     }
 

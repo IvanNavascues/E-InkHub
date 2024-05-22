@@ -7,6 +7,10 @@ class View {
     public function showAlert($message) {
         echo '<script>alert("'.$message.'");</script>';
     }
+
+    public function reloadPage($page) {
+        echo '<script>window.location.replace('.$page.');</script>';
+    }
 }
 
 class MainView extends View {

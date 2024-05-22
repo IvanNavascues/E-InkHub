@@ -83,7 +83,9 @@
                 $res = $printScreenModule->createScreenForUser($screen,$_SESSION['user']);
                 if ($res === 0) {
                     $vista->showAlert("Pantalla añadida con exito");
-                    header("Refresh: 4; URL=index.php");
+                    $vista->reloadPage("index.php");
+                    //header('Location: index.php');
+                    echo 
                     exit();
                 }
                 else if ($res === 1) {

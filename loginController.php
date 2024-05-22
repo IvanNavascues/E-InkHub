@@ -16,6 +16,6 @@
         }
     }
     
-    header("Refresh: 0; URL=index.php");
+    header("Refresh: 1; URL=index.php");
     exit();
 ?>
