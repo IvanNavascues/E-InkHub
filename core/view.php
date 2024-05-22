@@ -10,7 +10,7 @@ class View {
 
     public function reloadPage($page) {
         $location = "https://e-inkhub.azurewebsites.net".$page;
-        echo '<script>window.location.replace('.$location.');</script>';
+        echo '<script>window.location.replace("'.$location.'");</script>';
     }
 }
 
