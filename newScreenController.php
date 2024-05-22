@@ -83,7 +83,7 @@
                 $res = $printScreenModule->createScreenForUser($screen,$_SESSION['user']);
                 if ($res === 0) {
                     $vista->showAlert("Pantalla añadida con exito");
-                    $vista->reloadPage("https://e-inkhub.azurewebsites.net");
+                    $vista->reloadPage("");
                     //header('Location: index.php');
                     exit();
                 }
