@@ -131,15 +131,14 @@ class PrintScreenModule extends Model {
                             ".$screen->getWidth().",
                             ".$screen->getHeight().",
                             '".$screen->getColor()."')";
-            //$params1 = array($screen->getMac(),$screen->getName(),intval($screen->getWidth()),intval($screen->getHeight()),$screen->getColor());
             $stmt1 = sqlsrv_query( $conn, $query);
             if($stmt1) {
-                //sqlsrv_commit($conn);
+                sqlsrv_commit($conn);
                 $result = 0;
                 $idNewScreen = $this->getScreenPrintableByMac($screen->getMac())->getId();
             }
             else{
-                //sqlsrv_rollback($conn);
+                sqlsrv_rollback($conn);
             }
             // Free statement and connection resources. 
             sqlsrv_free_stmt( $stmt1);
@@ -150,14 +149,13 @@ class PrintScreenModule extends Model {
         }
 
         $query = "INSERT INTO userscreens (idUser, idScreen) VALUES ('".intval($idUser)."','".intval($idNewScreen)."')";
-        //$params2 = array(intval($idUser),intval($idNewScreen));
         $stmt2 = sqlsrv_query( $conn, $query);
         if($stmt2) {
-            //sqlsrv_commit($conn);
-            //$result = 0;
+            sqlsrv_commit($conn);
         }
         else{
-            //sqlsrv_rollback($conn);
+            $result = -1;
+            sqlsrv_rollback($conn);
         }
         // Free statement and connection resources. 
         sqlsrv_free_stmt( $stmt2);
@@ -257,18 +255,16 @@ class PrintScreenModule extends Model {
         try {
             $conn = DatabaseConnSingleton::getConn();
 
-            $query = "UPDATE screens SET imageBase64 = '".$imageBase64."',imageHex = '".$imageHex."',imageRed = '".$imageRed."',imageGreen = '".$imageGreen."',imageBlue = '".$imageBlue."' WHERE id = '".$numScreen."'";
+            $query = "UPDATE screens SET imageBase64 = '".$imageBase64."',imageHex = '".$imageHex."',imageRed = '".$imageRed."',imageGreen = '".$imageGreen."',imageBlue = '".$imageBlue."' WHERE id = ".$numScreen;
             $stmt = sqlsrv_query( $conn, $query);
             if($stmt) {
-                sqlsrv_commit($conn); 
-                sqlsrv_free_stmt( $stmt);
-                return true;
+                sqlsrv_commit($conn);
             }
             else{
-                sqlsrv_rollback($conn); 
-                sqlsrv_free_stmt( $stmt);
-                return false;
+                sqlsrv_rollback($conn);
             }
+            /* Free statement and connection resources. */
+            sqlsrv_free_stmt( $stmt);
 
         } catch (Exception $e){
             
@@ -337,16 +333,16 @@ class PrintScreenModule extends Model {
         try
         {
             $conn = DatabaseConnSingleton::getConn();
+            $screen = null;
     
             $query = "SELECT * FROM screens WHERE id = '".$numScreen."'";
             $getScreen = sqlsrv_query($conn, $query);
-            if ($getScreen == FALSE) {
-                return null;
-                //die(FormatErrors(sqlsrv_errors()));
+            if ($getScreen !== null && $getScreen !== false) {
+                $row = sqlsrv_fetch_array($getScreen, SQLSRV_FETCH_ASSOC);
+                if ($row !== null && $row !== false)
+                    $screen = new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['latitude'],$row['longitude'],$row['lastUpdate'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']);
             }
             
-            $row = sqlsrv_fetch_array($getScreen, SQLSRV_FETCH_ASSOC);
-            $screen = new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['latitude'],$row['longitude'],$row['lastUpdate'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']);
             sqlsrv_free_stmt($getScreen);
             sqlsrv_close($conn);
 
@@ -560,16 +556,16 @@ class LoginScreenModule extends Model {
         try
         {
             $conn = DatabaseConnSingleton::getConn();
+
+            $user = null;
     
             $query = "SELECT * FROM users WHERE username = '".$username."' AND password = '".$password."'";
             $getUser = sqlsrv_query($conn, $query);
-            if ($getUser == FALSE) {
-                return null;
-                //die(FormatErrors(sqlsrv_errors()));
+            if ($getUser !== null && $getUser !== false) {
+                $row = sqlsrv_fetch_array($getUser, SQLSRV_FETCH_ASSOC);
+                if ($row !== null && $row !== false) 
+                    $user = new User($row['id'],$row['username'],$row['password']);
             }
-            
-            $row = sqlsrv_fetch_array($getUser, SQLSRV_FETCH_ASSOC);
-            $user = new User($row['id'],$row['username'],$row['password']);
             sqlsrv_free_stmt($getUser);
             sqlsrv_close($conn);
 
