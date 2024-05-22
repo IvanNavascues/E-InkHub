@@ -85,7 +85,6 @@
                     $vista->showAlert("Pantalla añadida con exito");
                     $vista->reloadPage("index.php");
                     //header('Location: index.php');
-                    echo 
                     exit();
                 }
                 else if ($res === 1) {
