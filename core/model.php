@@ -31,7 +31,7 @@ class Screen {
         $this->color = $color;
         $this->latitude = $latitude;
         $this->longitude = $longitude;
-        $this->lastUpdate = $lastUpdate;
+        $this->lastUpdate = strval($lastUpdate);
         $this->imageBase64 = $imageBase64;
         $this->imageHex = $imageHex;
         $this->imageRed = $imageRed;
