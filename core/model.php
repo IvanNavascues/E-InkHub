@@ -175,7 +175,7 @@ class PrintScreenModule extends Model {
             $query = "SELECT screens.* FROM screens JOIN userscreens ON screens.id = userscreens.idScreen WHERE userscreens.idUser = ".$idUser;
             
             $getScreens = sqlsrv_query($conn, $query);
-            if ($getScreens == FALSE) {
+            if ($getScreens === null || $getScreens === false) {
                 return $screenList;
                 //die(FormatErrors(sqlsrv_errors()));
             }
@@ -363,7 +363,6 @@ class PrintScreenModule extends Model {
 
             return $screen;
         } catch(Exception $e) {
-            //echo("Error!");
             return null;
         }
     }

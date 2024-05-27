@@ -74,6 +74,7 @@ class MainView extends View {
             $newScreen = $this->screenPatttern;
             $newScreen = str_replace("##id##",$screen->getId(),$newScreen);
             $newScreen = str_replace("##name##",$screen->getName(),$newScreen);
+            echo $screen->getLastUpdate();
             if ($screen->getLastUpdate() === null)
                 $newScreen = str_replace("##lastUpdate##","Nunca",$newScreen);
             else
