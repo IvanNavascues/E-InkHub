@@ -272,6 +272,7 @@ class PrintScreenModule extends Model {
             $query = "UPDATE screens SET imageBase64 = '".$imageBase64."',imageHex = '".$imageHex."',imageRed = '".$imageRed."',imageGreen = '".$imageGreen."',imageBlue = '".$imageBlue."' WHERE id = '".$numScreen."'";
             //echo $query;
             $stmt = sqlsrv_query( $conn, $query);
+            echo $stmt;
             if($stmt) {
                 sqlsrv_commit($conn);
                 sqlsrv_free_stmt( $stmt);
