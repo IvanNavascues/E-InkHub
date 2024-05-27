@@ -291,7 +291,7 @@ class PrintScreenModule extends Model {
         try {
             $conn = DatabaseConnSingleton::getConn();
 
-            $query = "UPDATE screens SET lastUpdate = now() WHERE MAC = '".$mac."'";
+            $query = "UPDATE screens SET lastUpdate = SYSDATETIMEOFFSET() AT TIME ZONE 'Central European Standard Time' WHERE MAC = '".$mac."'";
             $stmt = sqlsrv_query( $conn, $query);
             if($stmt) {
                 sqlsrv_commit($conn); 
