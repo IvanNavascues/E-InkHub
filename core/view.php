@@ -77,7 +77,7 @@ class MainView extends View {
             if ($screen->getLastUpdate() === null)
                 $newScreen = str_replace("##lastUpdate##","Nunca",$newScreen);
             else
-                $newScreen = str_replace("##lastUpdate##",date('Y-m-d H:i:s',$screen->getLastUpdate()->getTimestamp()),$newScreen);
+                $newScreen = str_replace("##lastUpdate##",$screen->getLastUpdate(),$newScreen);
             $newScreen = str_replace("##size##",$screen->getWidth().'x'.$screen->getHeight().' pixeles',$newScreen);
             $newScreen = str_replace("##color##",$this->colorsName[array_search($screen->getColor(), $this->colors)],$newScreen);
             if ($screen->getLatitude() === null || $screen->getLongitude() === null) {
