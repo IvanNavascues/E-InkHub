@@ -120,91 +120,105 @@ class PrintScreenModule extends Model {
 
     /* SQL SERVER */
     public function createScreenForUser($screen,$idUser) {
-        $conn = DatabaseConnSingleton::getConn();
-        $result = -1;
+        try {
+            $conn = DatabaseConnSingleton::getConn();
+            $result = -1;
 
-        $existingScreen = $this->getScreenPrintableByMac($screen->getMac());
-        if ($existingScreen === null) {
-            $query = "INSERT INTO screens (MAC, name, width, height, color) 
-                    VALUES ('".$screen->getMac()."',
-                            '".$screen->getName()."',
-                            ".$screen->getWidth().",
-                            ".$screen->getHeight().",
-                            '".$screen->getColor()."')";
-            $stmt1 = sqlsrv_query( $conn, $query);
-            if($stmt1) {
+            $existingScreen = $this->getScreenPrintableByMac($screen->getMac());
+            if ($existingScreen === null) {
+                $query = "INSERT INTO screens (MAC, name, width, height, color) 
+                        VALUES ('".$screen->getMac()."',
+                                '".$screen->getName()."',
+                                ".$screen->getWidth().",
+                                ".$screen->getHeight().",
+                                '".$screen->getColor()."')";
+                $stmt1 = sqlsrv_query( $conn, $query);
+                if($stmt1) {
+                    sqlsrv_commit($conn);
+                    $result = 0;
+                    $idNewScreen = $this->getScreenPrintableByMac($screen->getMac())->getId();
+                }
+                else{
+                    sqlsrv_rollback($conn);
+                }
+                // Free statement and connection resources. 
+                sqlsrv_free_stmt( $stmt1);
+            }
+            else {
+                $result = 1;
+                $idNewScreen = $existingScreen->getId();
+            }
+
+            $query = "INSERT INTO userscreens (idUser, idScreen) VALUES ('".intval($idUser)."','".intval($idNewScreen)."')";
+            $stmt2 = sqlsrv_query( $conn, $query);
+            if($stmt2) {
                 sqlsrv_commit($conn);
-                $result = 0;
-                $idNewScreen = $this->getScreenPrintableByMac($screen->getMac())->getId();
             }
             else{
+                $result = -1;
                 sqlsrv_rollback($conn);
             }
             // Free statement and connection resources. 
-            sqlsrv_free_stmt( $stmt1);
-        }
-        else {
-            $result = 1;
-            $idNewScreen = $existingScreen->getId();
-        }
+            sqlsrv_free_stmt( $stmt2);
 
-        $query = "INSERT INTO userscreens (idUser, idScreen) VALUES ('".intval($idUser)."','".intval($idNewScreen)."')";
-        $stmt2 = sqlsrv_query( $conn, $query);
-        if($stmt2) {
-            sqlsrv_commit($conn);
+            return $result;
+        }catch (Exception $e){
+            return -1;
         }
-        else{
-            $result = -1;
-            sqlsrv_rollback($conn);
-        }
-        // Free statement and connection resources. 
-        sqlsrv_free_stmt( $stmt2);
-
-        return $result;
     }
 
     public function getScreens($idUser) {
-        $conn = DatabaseConnSingleton::getConn();
+        try {
+            $conn = DatabaseConnSingleton::getConn();
 
-        $screenList = array();
-        $query = "SELECT screens.* FROM screens JOIN userscreens ON screens.id = userscreens.idScreen WHERE userscreens.idUser = ".$idUser;
-        
-        $getScreens = sqlsrv_query($conn, $query);
-        if ($getScreens == FALSE) {
+            $screenList = array();
+            $query = "SELECT screens.* FROM screens JOIN userscreens ON screens.id = userscreens.idScreen WHERE userscreens.idUser = ".$idUser;
+            
+            $getScreens = sqlsrv_query($conn, $query);
+            if ($getScreens == FALSE) {
+                return $screenList;
+                //die(FormatErrors(sqlsrv_errors()));
+            }
+
+            while ($row = sqlsrv_fetch_array($getScreens, SQLSRV_FETCH_ASSOC)) {
+                array_push($screenList, new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['latitude'],$row['longitude'],$row['lastUpdate'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']));
+            }
+            sqlsrv_free_stmt($getScreens);
+            sqlsrv_close($conn);
+
             return $screenList;
-            //die(FormatErrors(sqlsrv_errors()));
         }
-
-        while ($row = sqlsrv_fetch_array($getScreens, SQLSRV_FETCH_ASSOC)) {
-            array_push($screenList, new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['latitude'],$row['longitude'],$row['lastUpdate'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']));
+        catch (Exception $e){
+            return array();
         }
-        sqlsrv_free_stmt($getScreens);
-        sqlsrv_close($conn);
-
-        return $screenList;
     }
 
     public function checkUserIdScreen($idUser,$idScreen) {
-        $conn = DatabaseConnSingleton::getConn();
+        try {
+            $conn = DatabaseConnSingleton::getConn();
 
-        $query = "SELECT screens.id FROM screens JOIN userscreens ON screens.id = userscreens.idScreen WHERE userscreens.idUser = ".$idUser;
+            $query = "SELECT screens.id FROM screens JOIN userscreens ON screens.id = userscreens.idScreen WHERE userscreens.idUser = ".$idUser;
 
-        $getScreensId = sqlsrv_query($conn, $query);
-        if ($getScreensId == FALSE) {
+            $getScreensId = sqlsrv_query($conn, $query);
+            if ($getScreensId == FALSE) {
+                return false;
+                //die(FormatErrors(sqlsrv_errors()));
+            }
+
+            $found = false;
+            while ($row = sqlsrv_fetch_array($getScreensId, SQLSRV_FETCH_ASSOC)) {
+                $found = $row['id'] == $idScreen;
+                if ($found)
+                    break;
+            }
+            sqlsrv_free_stmt($getScreensId);
+            sqlsrv_close($conn);
+
+            return $found;
+        }catch (Exception $e){
             return false;
-            //die(FormatErrors(sqlsrv_errors()));
         }
 
-        $found = false;
-        while ($row = sqlsrv_fetch_array($getScreensId, SQLSRV_FETCH_ASSOC)) {
-            $found = $row['id'] == $idScreen;
-            if ($found)
-                break;
-        }
-        sqlsrv_free_stmt($getScreensId);
-        sqlsrv_close($conn);
-
-        return $found;
     }
 
     public function updateScreenOptions($screen) {
@@ -225,7 +239,7 @@ class PrintScreenModule extends Model {
                 return false;
             }
         } catch (Exception $e){
-            
+            return false;
         }
     }
 
@@ -247,7 +261,7 @@ class PrintScreenModule extends Model {
                 return false;
             }
         } catch (Exception $e){
-            
+            return false;
         }
     }
 
@@ -255,20 +269,22 @@ class PrintScreenModule extends Model {
         try {
             $conn = DatabaseConnSingleton::getConn();
 
-            $query = "UPDATE screens SET imageBase64 = '".$imageBase64."',imageHex = '".$imageHex."',imageRed = '".$imageRed."',imageGreen = '".$imageGreen."',imageBlue = '".$imageBlue."' WHERE id = '".$numScreen."'";
-            echo $query;
+            $query = "UPDATE screens SET imageBase64 = CONVERT(varbinary,'".$imageBase64."'),imageHex = '".$imageHex."',imageRed = CONVERT(varbinary,'".$imageRed."'),imageGreen = CONVERT(varbinary,'".$imageGreen."'),imageBlue = CONVERT(varbinary,'".$imageBlue."') WHERE id = '".$numScreen."'";
+            //echo $query;
             $stmt = sqlsrv_query( $conn, $query);
             if($stmt) {
                 sqlsrv_commit($conn);
+                sqlsrv_free_stmt( $stmt);
+                return true;
             }
             else{
                 sqlsrv_rollback($conn);
+                sqlsrv_free_stmt( $stmt);
+                return false;
             }
-            /* Free statement and connection resources. */
-            sqlsrv_free_stmt( $stmt);
 
         } catch (Exception $e){
-            
+            return false;
         }
     }
 
@@ -290,7 +306,7 @@ class PrintScreenModule extends Model {
             }
 
         } catch (Exception $e){
-            
+            return false;
         }
     }
 
@@ -326,13 +342,12 @@ class PrintScreenModule extends Model {
             return $result;
 
         } catch (Exception $e){
-            
+            return false;
         }
     }
 
     public function getScreenPrintableById($numScreen) {
-        try
-        {
+        try {
             $conn = DatabaseConnSingleton::getConn();
             $screen = null;
     
@@ -348,15 +363,14 @@ class PrintScreenModule extends Model {
             sqlsrv_close($conn);
 
             return $screen;
-        }
-        catch(Exception $e) {
+        } catch(Exception $e) {
             //echo("Error!");
+            return null;
         }
     }
     
     public function getScreenPrintableByMac($macScreen) {
-        try
-        {
+        try {
             $conn = DatabaseConnSingleton::getConn();
 
             $screen = null;
@@ -372,33 +386,35 @@ class PrintScreenModule extends Model {
             sqlsrv_close($conn);
 
             return $screen;
-        }
-        catch(Exception $e) {
-            echo("Error!");
+        } catch(Exception $e) {
             return null;
         }
     }
 
     public function setScreenToUserByMac($mac,$idUser) {
-        $conn = DatabaseConnSingleton::getConn();
+        try {
+            $conn = DatabaseConnSingleton::getConn();
 
-        $screen = $this->getScreenPrintableByMac($mac);
-        if($screen != null) {
-            $query = "INSERT INTO userscreens (idUser, idScreen) VALUES ('".$idUser."', '".$screen->getId()."')";
-            $stmt = sqlsrv_query( $conn, $query);
-            if($stmt) {
-                sqlsrv_commit($conn);
-            }
-            else{
-                sqlsrv_rollback($conn);
-            }
-            // Free statement and connection resources. 
-            sqlsrv_free_stmt( $stmt);
+            $screen = $this->getScreenPrintableByMac($mac);
+            if($screen != null) {
+                $query = "INSERT INTO userscreens (idUser, idScreen) VALUES ('".$idUser."', '".$screen->getId()."')";
+                $stmt = sqlsrv_query( $conn, $query);
+                if($stmt) {
+                    sqlsrv_commit($conn);
+                }
+                else{
+                    sqlsrv_rollback($conn);
+                }
+                // Free statement and connection resources. 
+                sqlsrv_free_stmt( $stmt);
 
-            return true;
+                return true;
+            }
+
+            return false;
+        } catch(Exception $e) {
+            return false;
         }
-
-        return false;
     }
 
     /*MySQL*/
