@@ -51,21 +51,10 @@ class MainView extends View {
         $newPortion = file_get_contents(__DIR__ . '/html/mainPage.html');
         $page = str_replace("##content##",$newPortion,$page);
 
-        $page = str_replace("##screens##",$this->getScreenOptions(),$page);
-
         $page = str_replace("##screenList##",$this->getScreenList(),$page);
         $page = str_replace("##coords##",$this->getScreenCoords(),$page);
 
         echo $page;
-    }
-
-    public function getScreenOptions() {
-        $content = "";
-        foreach ($this->screenList as $screen) {
-            $content .= '<option value="'.$screen->getId().'">'.$screen->getName().'</option>';
-        }
-
-        return $content;
     }
 
     public function getScreenList() {

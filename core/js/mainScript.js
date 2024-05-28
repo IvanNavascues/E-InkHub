@@ -91,7 +91,7 @@ function setupCanvas(canvasImage,lastUpdateDate) {
 			if (lastUpdateDate === null)
 				lastUpdateLi.innerHTML = '<text class="text-center text-light fw-medium ms-4 p-1">Ultima vez visto: Nunca</text>';
 			else
-				lastUpdateLi.innerHTML = '<text class="text-center text-light fw-medium ms-4 p-1">Ultima vez visto: '+new Date(lastUpdateDate.getTimestamp()*1000)+'</text>';
+				lastUpdateLi.innerHTML = '<text class="text-center text-light fw-medium ms-4 p-1">Ultima vez visto: '+lastUpdateDate+'</text>';
 			//create canvas
 			pixelDensity(1); 
 			canvas = createCanvas(screenWidth, screenHeight);
