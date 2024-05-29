@@ -50,7 +50,9 @@ function screenSelected(id){
 						screenColor = res.color;
 						savedCanvas = null;
 						var imageHexBase64 = res.imageBase64;
+						alert(imageHexBase64);
 						hexToBase64(imageHexBase64);
+						alert(imageHexBase64);
 						setupCanvas(imageHexBase64,res.lastUpdate);
 						canvasPrinted = true;
 					}
