@@ -49,13 +49,21 @@ function screenSelected(id){
 						screenHeight = res.height;
 						screenColor = res.color;
 						savedCanvas = null;
-						setupCanvas(res.imageBase64,res.lastUpdate);
+						var imageHexBase64 = res.imageBase64;
+						hexToBase64(imageHexBase64);
+						setupCanvas(imageHexBase64,res.lastUpdate);
 						canvasPrinted = true;
 					}
 				}
 			});
 		}
 	}
+}
+
+function hexToBase64(str) {
+    return btoa(String.fromCharCode.apply(null,
+      str.replace(/\r|\n/g, "").replace(/([\da-fA-F]{2}) ?/g, "0x$1 ").replace(/ +$/, "").split(" "))
+    );
 }
 
 function clearPage() {
