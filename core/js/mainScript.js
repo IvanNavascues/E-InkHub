@@ -382,7 +382,7 @@ function saveImage() {
 			var newPixel = imgBW.get(x,y);
 			let newGrayScale = (newPixel[0]+newPixel[1]+newPixel[2])/3;
 			
-			blackWhiteArray.push(newGrayScale > imageThreshold ? 0 : 1);
+			blackWhiteArray.push(grayscaleValue > imageThreshold ? 0 : 1);
 
 			var pixelRed = [pixel[0],0,0,pixel[3]];
 			imgRed.set(x,y,pixelRed);
