@@ -49,9 +49,8 @@ function screenSelected(id){
 						screenHeight = res.height;
 						screenColor = res.color;
 						savedCanvas = null;
-						var imageHexBase64 = res.imageBase64;
-						alert(imageHexBase64);
-						hexToBase64(imageHexBase64);
+						/*var imageHexBase64 = res.imageBase64;
+						hexToBase64(imageHexBase64);*/
 						setupCanvas(res.imageBase64,res.lastUpdate);
 						canvasPrinted = true;
 					}
@@ -97,7 +96,7 @@ function setupCanvas(canvasImage,lastUpdateDate) {
 			var deleteLi = document.getElementById("deleteLi");
 			deleteLi.innerHTML = '<a class="nav-link active fs-4 fw-medium ms-2" aria-current="page" href=newScreenController.php?delete='+currentScreen+' onclick="return confirm(\'¡ATENCIÓN! Se eliminará la pantalla del sistema, ¿Quiere continuar?\');">Eliminar pantalla</a>';
 			var lastUpdateLi = document.getElementById("lastUpdateLi");
-			alert(Object.keys(lastUpdateDate));
+			//alert(Object.keys(lastUpdateDate));
 			if (lastUpdateDate === null)
 				lastUpdateLi.innerHTML = '<text class="text-center text-light fw-medium ms-4 p-1">Ultima vez visto: Nunca</text>';
 			else
