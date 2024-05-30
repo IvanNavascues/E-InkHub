@@ -39,16 +39,18 @@
     }
     
     if ($screen != null) {
-        $aResult['width'] = $screen->getWidth();
-        $aResult['height'] = $screen->getHeight();
-        $aResult['color'] = $screen->getColor();
-        $aResult['lastUpdate'] = $screen->getLastUpdate();
-        $aResult['imageBase64'] = $screen->getImageBase64();
         $aResult['imageHex'] = $screen->getImageHex();
-        $aResult['imageRed'] = $screen->getImageRed();
-        $aResult['imageGreen'] = $screen->getImageGreen();
-        $aResult['imageBlue'] = $screen->getImageBlue();
         $aResult['status'] = 0;
+        if (isset($_GET['numScreen'])) {
+            $aResult['width'] = $screen->getWidth();
+            $aResult['height'] = $screen->getHeight();
+            $aResult['color'] = $screen->getColor();
+            $aResult['lastUpdate'] = $screen->getLastUpdate();
+            $aResult['imageBase64'] = $screen->getImageBase64();
+            $aResult['imageRed'] = $screen->getImageRed();
+            $aResult['imageGreen'] = $screen->getImageGreen();
+            $aResult['imageBlue'] = $screen->getImageBlue();
+        }
     }
     else {
         $aResult['error'] = "ERROR: La pantalla seleccionada no existe";
