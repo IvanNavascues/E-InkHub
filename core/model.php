@@ -136,7 +136,12 @@ class PrintScreenModule extends Model {
                 if($stmt1) {
                     sqlsrv_commit($conn);
                     $result = 0;
-                    $idNewScreen = $this->getScreenPrintableByMac($screen->getMac())->getId();
+                    $newScreen = $this->getScreenPrintableByMac($screen->getMac());
+                    if ($newScreen !== null)
+                        $idNewScreen = $newScreen->getId();
+                    else{
+                        echo "ERROR MAC";
+                    }
                 }
                 else{
                     sqlsrv_rollback($conn);
