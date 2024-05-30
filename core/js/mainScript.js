@@ -15,6 +15,7 @@ var screenHeight;
 var minBrushThick = 1;
 var maxBrushThick = 40;
 var headText = 0;
+var imageThreshold = 128;
 var typedText = "_";
 var savedCanvas = null;
 var shapeSelected = "";
@@ -346,16 +347,19 @@ function saveImage() {
 	var imgBlue = createImage(screenWidth, screenHeight);
 	imgBlue.loadPixels();
 	var imgBW = createImage(screenWidth, screenHeight);
-	imgBW.loadPixels();
+	//imgBW.loadPixels();
 	var blackWhiteArray = [];
 	const d = pixelDensity();
 	for (let y = 0; y < img.height; y++) {
 		for (let x = 0; x < img.width; x++) {
 			pixel = img.get(x,y);
+
 			var grayscaleValue = pixel[0]*0.3 + pixel[1]*0.59 + pixel[2]*0.11; //Metodo luminico
-			blackWhiteArray.push(grayscaleValue > 128 ? 0 : 1);
 			
-			imgBW.set(x,y,grayscaleValue > 128 ? 255 : 0);
+			//imgBW.set(x,y,grayscaleValue > 128 ? 255 : 0);
+			
+			blackWhiteArray.push(grayscaleValue > imageThreshold ? 0 : 1);
+
 			var pixelRed = [pixel[0],0,0,pixel[3]];
 			imgRed.set(x,y,pixelRed);
 			var pixelGreen = [0,pixel[1],0,pixel[3]];
@@ -364,11 +368,81 @@ function saveImage() {
 			imgBlue.set(x,y,pixelBlue);
 		}
 	}
+
 	var hexArray = bitsToHex(blackWhiteArray);
-	imgBW.updatePixels();
+	//imgBW.updatePixels();
 	imgRed.updatePixels();
 	imgGreen.updatePixels();
 	imgBlue.updatePixels();
+
+	//Update BW
+	imgBW.loadPixels();
+
+	for (let y = 0; y < img.height; y++) {
+		for (let x = 0; x < img.width; x++) {
+			let index = (x + y * img.width) * 4;
+			let r = img.pixels[index];
+			let g = img.pixels[index + 1];
+			let b = img.pixels[index + 2];
+
+			let bright = (r + g + b) / 3;
+			if (bright > imageThreshold){
+				newColor = 255;
+			} else{
+				newColor = 0;
+			}
+			let err = bright - newColor;
+
+			imgBW.pixels[index] = newColor;
+			imgBW.pixels[index + 1] = newColor;
+			imgBW.pixels[index + 2] = newColor;
+			imgBW.pixels[index + 3] = 255;
+
+			/*if (x+1 >= 0 && x+1 < imgBW.width) {
+				imgBW.set(x+1,y,imgBW.get(x+1,y).map(function(entry) {
+					return entry+err * 7 / 16;
+				}));
+			}
+			if (x-1 >= 0 && x-1 < imgBW.width && y+1 >= 0 && y+1 < imgBW.height) {
+				imgBW.set(x-1,y+1,imgBW.get(x-1,y+1).map(function(entry) {
+					return entry+err * 3 / 16;
+				}));
+			}
+			if (y+1 >= 0 && y+1 < imgBW.height) {
+				imgBW.set(x,y+1,imgBW.get(x,y).map(function(entry) {
+					return entry+err * 5 / 16;
+				}));
+			}
+			if (x+1 >= 0 && x+1 < imgBW.width && y+1 >= 0 && y+1 < imgBW.height) {
+				imgBW.set(x+1,y+1,imgBW.get(x,y).map(function(entry) {
+					return entry+err * 1 / 16;
+				}));
+			}*/
+			
+			if (x+1 < imgBW.width) {
+				let newPixel = distributeError(imgBW.get(x+1,y),err);
+				imgBW.set(x+1,y,newPixel);
+			}if (x-1 >= 0 && y < imgBW.height) {
+				let newPixel = distributeError(imgBW.get(x-1,y+1),err);
+				imgBW.set(x-1,y+1,newPixel);
+				 
+			}if (y < imgBW.height) {
+				let newPixel = distributeError(imgBW.get(x,y+1),err);
+				imgBW.set(x,y+1,newPixel);
+				 
+			}if (x < imgBW.width && y < imgBW.height) {
+				let newPixel = distributeError(imgBW.get(x+1,y+1),err);
+				imgBW.set(x+1,y+1,newPixel);
+			}
+			/*
+			imgBW = distributeError(imgBW, x + 1, y, err * 7 / 16);
+			imgBW = distributeError(imgBW, x - 1, y + 1, err * 3 / 16);
+			imgBW = distributeError(imgBW, x, y + 1, err * 5 / 16);
+			imgBW = distributeError(imgBW, x + 1, y + 1, err * 1 / 16);*/
+		}
+	}
+
+	imgBW.updatePixels();
 
 	if (screenColor === screenTypes[0]) 
 		image(imgBW,0,0);
@@ -403,41 +477,21 @@ function saveImage() {
 						alert(res.error);
 				},
 				"json");
-			
-				/*
-			const xhr = new XMLHttpRequest();
-			xhr.open("POST", "submitController.php");
-			xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8")
-
-			const body = JSON.stringify( {
-					"numScreen": parseInt(screenNumber), 
-					"imageBase64": canvasDataURL,
-					"imageHex": hexArray,
-					"imageRed": canvasDataURLRed,
-					"imageGreen": canvasDataURLGreen,
-					"imageBlue": canvasDataURLBlue
-				});
-			  xhr.onload = () => {
-				if (xhr.readyState == 4) {
-					var res = JSON.parse(xhr.responseText);
-					if (res.status != -1) {
-						alert("Imagen actualizada con exito");
-					}	
-					else
-						console.log(`Error: ${res.error}`);
-				} else {
-				  console.log(`Error: ${xhr.status}`);
-				}
-			  };
-			  xhr.send(body);*/
-
 		}
 		else {
 			image(savedCanvas,0,0);
 		}
 	},1);
 }
-  
+
+function distributeError(pixel, err) {
+	pixel[0] += err;
+	pixel[1] += err;
+	pixel[2] += err;
+	
+	return pixel;
+}
+
 //check for key press
 function keyPressed() {
 	var slider = select("#thickSlider");

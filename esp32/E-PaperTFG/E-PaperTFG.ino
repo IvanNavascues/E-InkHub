@@ -25,8 +25,8 @@ GxEPD_Class display(io, 16, 4);
 const char* WIFI_SSID = "";
 const char* WIFI_PASSWORD = "";
 
-String HOST_NAME = ""; // change to your PC's IP address
-String PATH_NAME   = "/InkScreen/screenController.php";
+String HOST_NAME = "https://e-inkhub.azurewebsites.net"; // change to your PC's IP address
+String PATH_NAME   = "/screenController.php";
 String queryString = "?macScreen=";
 
 void setup()
@@ -95,7 +95,7 @@ void setup()
   textPrinted.trim();
 
   
-  if (httpCode > 0 && printStatus == 0) {
+  if (httpCode > 0 && printStatus == 0 && !textPrinted.isEmpty()) {
     Serial.println("Printing image...");
     const char *newText = textPrinted.c_str();
     uint8_t imageHex[4096];
