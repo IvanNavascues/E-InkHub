@@ -367,8 +367,9 @@ function saveImage() {
 			pixel = img.get(x,y);
 
 			var grayscaleValue = pixel[0]*0.3 + pixel[1]*0.59 + pixel[2]*0.11; //Metodo luminico
-			let newColor = grayscaleValue > imageThreshold ? 255 : 0;
-			let err = grayscaleValue - newColor;
+			var bright = (pixel[0]+pixel[1]+pixel[2])/3;
+			let newColor = bright > imageThreshold ? 255 : 0;
+			let err = bright - newColor;
 			
 			//imgBW.set(x,y,grayscaleValue > 128 ? 255 : 0);
 			var auxPixel = [newColor,newColor,newColor,255];
