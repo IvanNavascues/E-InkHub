@@ -373,7 +373,6 @@ function saveImage() {
 			//imgBW.set(x,y,grayscaleValue > 128 ? 255 : 0);
 			var auxPixel = [newColor,newColor,newColor,255];
 			imgBW.set(x,y,auxPixel);
-			imgBW.updatePixels();
 
 			distributeError(imgBW, x + 1, y, err * 7 / 16);
 			distributeError(imgBW, x - 1, y + 1, err * 3 / 16);
@@ -441,7 +440,7 @@ function saveImage() {
   
 function distributeError(actualImage, x, y, err) {
 	if (x >= 0 && x < actualImage.width && y >= 0 && y < actualImage.height) {
-		let index = (x + y * img.width) * 4;
+		let index = (x + y * actualImage.width) * 4;
 		actualImage.pixels[index] += err;
 		actualImage.pixels[index + 1] += err;
 		actualImage.pixels[index + 2] += err;
