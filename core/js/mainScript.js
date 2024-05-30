@@ -370,14 +370,16 @@ function saveImage() {
 			let newColor = grayscaleValue > imageThreshold ? 255 : 0;
 			let err = grayscaleValue - newColor;
 			
-			imgBW.set(x,y,grayscaleValue > 128 ? 255 : 0);
+			//imgBW.set(x,y,grayscaleValue > 128 ? 255 : 0);
+			var newPixel = [newColor,newColor,newColor,255];
+			imgBW.set(x,y,newPixel);
 
 			distributeError(imgBW, x + 1, y, err * 7 / 16);
 			distributeError(imgBW, x - 1, y + 1, err * 3 / 16);
 			distributeError(imgBW, x, y + 1, err * 5 / 16);
 			distributeError(imgBW, x + 1, y + 1, err * 1 / 16);
 
-			let newPixel = imgBW.get(x,y);
+			newPixel = imgBW.get(x,y);
 			let newGrayScale = (newPixel[0]+newPixel[1]+newPixel[2])/3;
 			
 			blackWhiteArray.push(newGrayScale > imageThreshold ? 0 : 1);
