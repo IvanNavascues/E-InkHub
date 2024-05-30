@@ -358,49 +358,71 @@ function saveImage() {
 	imgGreen.loadPixels();
 	var imgBlue = createImage(screenWidth, screenHeight);
 	imgBlue.loadPixels();
-	var imgBW = createImage(screenWidth, screenHeight);
-	imgBW.loadPixels();
+
+	
 	var blackWhiteArray = [];
-	const d = pixelDensity();
-	for (let y = 0; y < img.height; y++) {
-		for (let x = 0; x < img.width; x++) {
-			pixel = img.get(x,y);
 
-			var grayscaleValue = pixel[0]*0.3 + pixel[1]*0.59 + pixel[2]*0.11; //Metodo luminico
-			var bright = (pixel[0]+pixel[1]+pixel[2])/3;
-			let newColor = bright > imageThreshold ? 255 : 0;
-			let err = bright - newColor;
-			
-			//imgBW.set(x,y,grayscaleValue > 128 ? 255 : 0);
-			var auxPixel = [newColor,newColor,newColor,255];
-			imgBW.set(x,y,auxPixel);
+	/* APPLY DITHERING */
+	var imgBW = get(0, 0, width, height);
+	imgBW.loadPixels();
+	for (let y = 0; y < imgBW.height; y++) {
+	    for (let x = 0; x < imgBW.width; x++) {
+	      let index = (x + y * imgBW.width) * 4;
+	      let r = imgBW.pixels[index];
+	      let g = imgBW.pixels[index + 1];
+	      let b = imgBW.pixels[index + 2];
+	
+	      let bright = (r + g + b) / 3;
 
-			distributeError(imgBW, x + 1, y, err * 7 / 16);
-			distributeError(imgBW, x - 1, y + 1, err * 3 / 16);
-			distributeError(imgBW, x, y + 1, err * 5 / 16);
-			distributeError(imgBW, x + 1, y + 1, err * 1 / 16);
-
-			var newPixel = imgBW.get(x,y);
-			let newGrayScale = (newPixel[0]+newPixel[1]+newPixel[2])/3;
-			
-			blackWhiteArray.push(grayscaleValue > imageThreshold ? 0 : 1);
-
-			var pixelRed = [pixel[0],0,0,pixel[3]];
-			imgRed.set(x,y,pixelRed);
-			var pixelGreen = [0,pixel[1],0,pixel[3]];
-			imgGreen.set(x,y,pixelGreen);
-			var pixelBlue = [0,0,pixel[2],pixel[3]];
-			imgBlue.set(x,y,pixelBlue);
-		}
+		  let threshold = 128;
+	      let newColor = bright > threshold ? 255 : 0;
+	      let err = bright - newColor;
+	
+	      imgBW.pixels[index] = newColor;
+	      imgBW.pixels[index + 1] = newColor;
+	      imgBW.pixels[index + 2] = newColor;
+	      imgBW.pixels[index + 3] = 255;
+	
+		  //right neighbour
+		  if ((x + 1) >= 0 && (x + 1) < imgBW.width && y >= 0 && y < imgBW.height) {
+		    let index = ((x + 1) + y * imgBW.width) * 4;
+		    imgBW.pixels[index] += err * 7 / 16;
+		    imgBW.pixels[index + 1] += err * 7 / 16;
+		    imgBW.pixels[index + 2] += err * 7 / 16;
+		  }
+		  //bottom-left neighbour
+		  if ((x - 1) >= 0 && x < imgBW.width && (y + 1) >= 0 && (y + 1) < imgBW.height) {
+		    let index = (x - 1 + (y + 1) * imgBW.width) * 4;
+		    imgBW.pixels[index] += err * 3 / 16;
+		    imgBW.pixels[index + 1] += err * 3 / 16;
+		    imgBW.pixels[index + 2] += err * 3 / 16;
+		  }
+		  //bottom neighbour
+		  if (x >= 0 && x < imgBW.width && (y + 1) >= 0 && (y + 1) < imgBW.height) {
+		    let index = (x + (y + 1) * imgBW.width) * 4;
+		    imgBW.pixels[index] += err * 5 / 16;
+		    imgBW.pixels[index + 1] += err * 5 / 16;
+		    imgBW.pixels[index + 2] += err * 5 / 16;
+		  }
+		  //bottom right neighbour
+		  if ((x+1) >= 0 && (x+1) < imgBW.width && (y + 1) >= 0 && (y + 1) < imgBW.height) {
+		    let index = ((x+1) + (y + 1) * imgBW.width) * 4;
+		    imgBW.pixels[index] += err * 1 / 16;
+		    imgBW.pixels[index + 1] += err * 1 / 16;
+		    imgBW.pixels[index + 2] += err * 1 / 16;
+		  }
+	    }
 	}
+	
 	var hexArray = bitsToHex(blackWhiteArray);
 	imgBW.updatePixels();
 	imgRed.updatePixels();
 	imgGreen.updatePixels();
 	imgBlue.updatePixels();
 
-	if (screenColor === screenTypes[0]) 
+	if (screenColor === screenTypes[0]){
 		image(imgBW,0,0);
+	}
 	else if (screenColor === screenTypes[1])
 		image(imgRed,0,0);
 	else if (screenColor === screenTypes[2])
@@ -437,15 +459,6 @@ function saveImage() {
 			image(savedCanvas,0,0);
 		}
 	},1);
-}
-  
-function distributeError(actualImage, x, y, err) {
-	if (x >= 0 && x < actualImage.width && y >= 0 && y < actualImage.height) {
-		let index = (x + y * actualImage.width) * 4;
-		actualImage.pixels[index] += err;
-		actualImage.pixels[index + 1] += err;
-		actualImage.pixels[index + 2] += err;
-	}
 }
 
 //check for key press
