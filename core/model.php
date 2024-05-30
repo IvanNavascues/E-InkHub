@@ -354,7 +354,7 @@ class PrintScreenModule extends Model {
             if ($getScreen !== null && $getScreen !== false) {
                 $row = sqlsrv_fetch_array($getScreen, SQLSRV_FETCH_ASSOC);
                 if ($row !== null && $row !== false)
-                    $screen = new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['latitude'],$row['longitude'],$row['lastUpdate'],$row['imageBase64New'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']);
+                    $screen = new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['latitude'],$row['longitude'],$row['lastUpdate'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']);
             }
             
             sqlsrv_free_stmt($getScreen);
