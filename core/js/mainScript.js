@@ -421,7 +421,7 @@ function saveImage() {
 				imgBW.pixels[index + 2] += err * 1 / 16;
 			}
 
-			var grayscaleValue = (imgBW.pixels[index]+imgBW.pixels[index+1]+imgBW.pixels[index+2] ) / 3;
+			var grayscaleValue = imgBW.pixels[index]*0.3+imgBW.pixels[index+1]*0.59+imgBW.pixels[index+2]*0.11;
 			blackWhiteArray.push(grayscaleValue > imageThreshold ? 0 : 1);
 	    }
 	}
