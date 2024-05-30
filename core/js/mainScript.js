@@ -371,18 +371,19 @@ function saveImage() {
 			let err = grayscaleValue - newColor;
 			
 			//imgBW.set(x,y,grayscaleValue > 128 ? 255 : 0);
-			var newPixel = [newColor,newColor,newColor,255];
-			imgBW.set(x,y,newPixel);
+			var auxPixel = [newColor,newColor,newColor,255];
+			imgBW.set(x,y,auxPixel);
+			imgBW.updatePixels();
 
 			distributeError(imgBW, x + 1, y, err * 7 / 16);
 			distributeError(imgBW, x - 1, y + 1, err * 3 / 16);
 			distributeError(imgBW, x, y + 1, err * 5 / 16);
 			distributeError(imgBW, x + 1, y + 1, err * 1 / 16);
 
-			newPixel = imgBW.get(x,y);
+			var newPixel = imgBW.get(x,y);
 			let newGrayScale = (newPixel[0]+newPixel[1]+newPixel[2])/3;
 			
-			blackWhiteArray.push(newGrayScale > imageThreshold ? 0 : 1);
+			blackWhiteArray.push(newColor > imageThreshold ? 0 : 1);
 
 			var pixelRed = [pixel[0],0,0,pixel[3]];
 			imgRed.set(x,y,pixelRed);
@@ -440,10 +441,10 @@ function saveImage() {
   
 function distributeError(actualImage, x, y, err) {
 	if (x >= 0 && x < actualImage.width && y >= 0 && y < actualImage.height) {
-	  let index = (x + y * img.width) * 4;
-	  actualImage.pixels[index] += err;
-	  actualImage.pixels[index + 1] += err;
-	  actualImage.pixels[index + 2] += err;
+		let index = (x + y * img.width) * 4;
+		actualImage.pixels[index] += err;
+		actualImage.pixels[index + 1] += err;
+		actualImage.pixels[index + 2] += err;
 	}
 }
 
