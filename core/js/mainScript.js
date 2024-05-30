@@ -367,9 +367,6 @@ function saveImage() {
 	for (let y = 0; y < img.height; y++) {
 	    for (let x = 0; x < img.width; x++) {
 			pixel = img.get(x,y);
-			
-			var grayscaleValue = pixel[0]*0.3+pixel[1]*0.59+pixel[2]*0.11;
-			blackWhiteArray.push(grayscaleValue > imageThreshold ? 0 : 1);
 
 			var pixelRed = [pixel[0],0,0,pixel[3]];
 			imgRed.set(x,y,pixelRed);
@@ -423,7 +420,9 @@ function saveImage() {
 				imgBW.pixels[index + 1] += err * 1 / 16;
 				imgBW.pixels[index + 2] += err * 1 / 16;
 			}
-
+			
+			var grayscaleValue = (imgBW.pixels[index]+imgBW.pixels[index+1]+imgBW.pixels[index+2])/3;
+			blackWhiteArray.push(grayscaleValue > imageThreshold ? 0 : 1);
 	    }
 	}
 	
