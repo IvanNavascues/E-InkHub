@@ -32,6 +32,7 @@ class Screen {
         $this->latitude = $latitude;
         $this->longitude = $longitude;
         $this->lastUpdate = $lastUpdate;
+        $this->imageBase64 = $imageBase64;
         $this->imageHex = $imageHex;
         $this->imageRed = $imageRed;
         $this->imageGreen = $imageGreen;
@@ -171,7 +172,7 @@ class PrintScreenModule extends Model {
             $conn = DatabaseConnSingleton::getConn();
 
             $screenList = array();
-            $query = "SELECT screens.*, convert(varchar,screens.imageBase64) as imageBase64New FROM screens JOIN userscreens ON screens.id = userscreens.idScreen WHERE userscreens.idUser = ".$idUser;
+            $query = "SELECT screens.* FROM screens JOIN userscreens ON screens.id = userscreens.idScreen WHERE userscreens.idUser = ".$idUser;
             
             $getScreens = sqlsrv_query($conn, $query);
             if ($getScreens === null || $getScreens === false) {
@@ -180,7 +181,7 @@ class PrintScreenModule extends Model {
             }
 
             while ($row = sqlsrv_fetch_array($getScreens, SQLSRV_FETCH_ASSOC)) {
-                array_push($screenList, new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['latitude'],$row['longitude'],$row['lastUpdate'],$row['imageBase64New'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']));
+                array_push($screenList, new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['latitude'],$row['longitude'],$row['lastUpdate'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']));
             }
             sqlsrv_free_stmt($getScreens);
             sqlsrv_close($conn);
@@ -349,7 +350,7 @@ class PrintScreenModule extends Model {
             $conn = DatabaseConnSingleton::getConn();
             $screen = null;
     
-            $query = "SELECT *, convert(varchar,imageBase64) as imageBase64New FROM screens WHERE id = '".$numScreen."'";
+            $query = "SELECT * FROM screens WHERE id = '".$numScreen."'";
             $getScreen = sqlsrv_query($conn, $query);
             if ($getScreen !== null && $getScreen !== false) {
                 $row = sqlsrv_fetch_array($getScreen, SQLSRV_FETCH_ASSOC);
@@ -372,12 +373,12 @@ class PrintScreenModule extends Model {
 
             $screen = null;
     
-            $query = "SELECT *, convert(varchar,imageBase64) as imageBase64New FROM screens WHERE MAC = '".$macScreen."'";
+            $query = "SELECT * FROM screens WHERE MAC = '".$macScreen."'";
             $getScreen = sqlsrv_query($conn, $query);
             if ($getScreen !== null && $getScreen !== false) {
                 $row = sqlsrv_fetch_array($getScreen, SQLSRV_FETCH_ASSOC);
                 if ($row !== null && $row !== false)
-                    $screen = new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['latitude'],$row['longitude'],$row['lastUpdate'],$row['imageBase64New'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']);
+                    $screen = new Screen($row['id'],$row['MAC'],$row['name'],$row['width'],$row['height'],$row['color'],$row['latitude'],$row['longitude'],$row['lastUpdate'],$row['imageBase64'],$row['imageHex'],$row['imageRed'],$row['imageGreen'],$row['imageBlue']);
             }
             sqlsrv_free_stmt($getScreen);
             sqlsrv_close($conn);
