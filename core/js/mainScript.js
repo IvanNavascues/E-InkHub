@@ -15,6 +15,7 @@ var screenHeight;
 var minBrushThick = 1;
 var maxBrushThick = 40;
 var headText = 0;
+var imageThreshold = 128;
 var typedText = "_";
 var savedCanvas = null;
 var shapeSelected = "";
@@ -364,10 +365,23 @@ function saveImage() {
 	for (let y = 0; y < img.height; y++) {
 		for (let x = 0; x < img.width; x++) {
 			pixel = img.get(x,y);
+
 			var grayscaleValue = pixel[0]*0.3 + pixel[1]*0.59 + pixel[2]*0.11; //Metodo luminico
-			blackWhiteArray.push(grayscaleValue > 128 ? 0 : 1);
+			let newColor = grayscaleValue > imageThreshold ? 255 : 0;
+			let err = grayscaleValue - newColor;
 			
 			imgBW.set(x,y,grayscaleValue > 128 ? 255 : 0);
+
+			distributeError(imgBW, x + 1, y, err * 7 / 16);
+			distributeError(imgBW, x - 1, y + 1, err * 3 / 16);
+			distributeError(imgBW, x, y + 1, err * 5 / 16);
+			distributeError(imgBW, x + 1, y + 1, err * 1 / 16);
+
+			let newPixel = imgBW.get(x,y);
+			let newGrayScale = (newPixel[0]+newPixel[1]+newPixel[2])/3;
+			
+			blackWhiteArray.push(newGrayScale > imageThreshold ? 0 : 1);
+
 			var pixelRed = [pixel[0],0,0,pixel[3]];
 			imgRed.set(x,y,pixelRed);
 			var pixelGreen = [0,pixel[1],0,pixel[3]];
@@ -415,34 +429,6 @@ function saveImage() {
 						alert(res.error);
 				},
 				"json");
-			
-				/*
-			const xhr = new XMLHttpRequest();
-			xhr.open("POST", "submitController.php");
-			xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8")
-
-			const body = JSON.stringify( {
-					"numScreen": parseInt(screenNumber), 
-					"imageBase64": canvasDataURL,
-					"imageHex": hexArray,
-					"imageRed": canvasDataURLRed,
-					"imageGreen": canvasDataURLGreen,
-					"imageBlue": canvasDataURLBlue
-				});
-			  xhr.onload = () => {
-				if (xhr.readyState == 4) {
-					var res = JSON.parse(xhr.responseText);
-					if (res.status != -1) {
-						alert("Imagen actualizada con exito");
-					}	
-					else
-						console.log(`Error: ${res.error}`);
-				} else {
-				  console.log(`Error: ${xhr.status}`);
-				}
-			  };
-			  xhr.send(body);*/
-
 		}
 		else {
 			image(savedCanvas,0,0);
@@ -450,6 +436,15 @@ function saveImage() {
 	},1);
 }
   
+function distributeError(actualImage, x, y, err) {
+	if (x >= 0 && x < actualImage.width && y >= 0 && y < actualImage.height) {
+	  let index = (x + y * img.width) * 4;
+	  actualImage.pixels[index] += err;
+	  actualImage.pixels[index + 1] += err;
+	  actualImage.pixels[index + 2] += err;
+	}
+}
+
 //check for key press
 function keyPressed() {
 	var slider = select("#thickSlider");
