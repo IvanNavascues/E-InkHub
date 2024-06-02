@@ -383,8 +383,7 @@ function saveImage() {
 			//let bright = (r + g + b) / 3;
 			let bright = r*0.3 + g*0.59 + b*0.11; //Metodo luminico
 
-			let threshold = 128;
-			let newColor = bright > threshold ? 255 : 0;
+			let newColor = bright > imageThreshold ? 255 : 0;
 			let err = bright - newColor;
 		
 			imgBW.pixels[index] = newColor;
